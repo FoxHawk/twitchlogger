@@ -29,31 +29,70 @@ def subscribeToChannel(channel: str):
 	body = copy.deepcopy(subscribeTemplate)
 	body["condition"]["broadcaster_user_id"] = uid
 	#make the twitch api web request
-	resp = requests.post(url, data=body, headers={"Client-ID": clientID, "Authorization": "Bearer " + bearerToken["access_token"], "Content-Type": "application/json"})
+	resp = requests.post(url, data=json.dumps(body), headers={"Client-ID": clientID, "Authorization": "Bearer " + bearerToken["access_token"], "Content-Type": "application/json"})
 
-	if (resp.status_code != 200): #if the api request doesn't give a 200 response, return false
+	if (not resp.ok): #if the api request returns an error code, return false
 		return False
 
 	response = json.loads(resp.text) #parse the response as json
 
-	if("data" not in response or "status" not in response["data"]): #Check that the field "data" and "data.status" exist. if not, return false
+	if("data" not in response or "status" not in response["data"][0]): #Check that the field "data" and "data.status" exist. if not, return false
 		return False
 
-	if(response["data"]["status"] == "webhook_callback_verification_pending"): #Check that the status is verification pending
-		return response["data"]["id"] #return the id of the subscribed event
+	if(response["data"][0]["status"] == "webhook_callback_verification_pending"): #Check that the status is verification pending
+		return response["data"][0]["id"] #return the id of the subscribed event
 
 def unsubscribeFromChannel(channel: str):
 	global bearerToken
-	global url
 	
-	#try to get the uid of the user. if we can't, return false
-	uid = getUserID(channel)
-	if(not uid):
-		return False
-	#send a delete request to the twitch api
-	resp = requests.delete(url, headers={"Client-ID": clientID, "Authorization": "Bearer " + bearerToken["access_token"]}, params={"id": uid})
+	#check if we have a bearer token already saved, if not, fetch one
+	if (bearerToken == None and not getBearerToken()):
+		return False #return false if we cannot get a bearer token
 
-	return resp.status_code == 200 #return whether the response code was 200 or not (true or false respectively)
+	uid = getUserID(channel)
+	if(not uid): #if we couldn't get the user's ID, return false
+		return False
+	
+	eventId = getEventFromID(uid)
+	if(not eventId):
+		return False
+	
+	resp = requests.delete(url, headers={"Client-ID": clientID, "Authorization": "Bearer " + bearerToken["access_token"]}, params={"id": eventId})
+
+	if (not resp.ok):
+		return False
+	
+	return True
+
+
+def getEventFromID(userID: str):
+	events = getSubscribedEvents()
+
+	for i in events:
+		if (i[1] == userID):
+			return i[0]
+	
+	return False
+
+def getSubscribedEvents():
+	global bearerToken
+
+	resp = requests.get(url, headers={"Client-ID": clientID, "Authorization": "Bearer " + bearerToken["access_token"]})
+	
+	if (not resp.ok):
+		return False
+	
+	data = json.loads(resp.text)
+	
+	if ("data" not in data):
+		return False
+
+	eventIDs = []
+
+	for i in data["data"]:
+		eventIDs.append((i["id"], i["condition"]["broadcaster_user_id"]))
+	
+	return eventIDs
 
 def getBearerToken():
 	global bearerToken
@@ -70,15 +109,22 @@ def getBearerToken():
 
 def getUserID(channel: str):
 	#send request to twitch api endpoint to get user info
-	resp = requests.get("https://api.twitch.tv/helix/streams", params={"user_login": channel})
+	resp = requests.get("https://api.twitch.tv/helix/users", params={"login": channel}, headers={
+		"Client-ID": clientID, "Authorization": "Bearer " + bearerToken["access_token"]})
 	#if the api did not respond with code 200 then return false
 	if (resp.status_code != 200):
 		return False
 	
 	#parse response body as json
 	data = json.loads(resp.text)
-	#if the fields "data" and "data.user_id" exist, return the user id
-	if("data" in data and "user_id" in data["data"]):
-		return data["data"]["user_id"]
+	#if the fields "data" and "data.id" exist, return the user id
+	if("data" in data and "id" in data["data"][0]):
+		return data["data"][0]["id"]
 	
 	return False #if the fields do not exist, return false
+
+
+if (__name__ == "__main__"):
+	channels = [line.rstrip('\n') for line in open("channels.txt")]
+	for i in channels:
+		unsubscribeFromChannel(i)
