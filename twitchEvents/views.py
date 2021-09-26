@@ -19,6 +19,6 @@ def endpoint(request: HttpRequest):
 
 	event = data["event"]
 
-	le = LogEntry(channel=event["broadcaster_user_id"], startedAt=event["started_at"], eventID=event["id"], type=event["type"])
+	le = LogEntry(channel=event["broadcaster_user_name"], startedAt=event["started_at"], eventID=event["id"], type=event["type"])
 	le.save()
 	return HttpResponse()
