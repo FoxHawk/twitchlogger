@@ -77,6 +77,10 @@ def getEventFromID(userID: str):
 def getSubscribedEvents():
 	global bearerToken
 
+	#check if we have a bearer token already saved, if not, fetch one
+	if (bearerToken == None and not getBearerToken()):
+		return False #return false if we cannot get a bearer token
+
 	resp = requests.get(url, headers={"Client-ID": clientID, "Authorization": "Bearer " + bearerToken["access_token"]})
 	
 	if (not resp.ok):
@@ -122,9 +126,3 @@ def getUserID(channel: str):
 		return data["data"][0]["id"]
 	
 	return False #if the fields do not exist, return false
-
-
-if (__name__ == "__main__"):
-	channels = [line.rstrip('\n') for line in open("channels.txt")]
-	for i in channels:
-		unsubscribeFromChannel(i)
