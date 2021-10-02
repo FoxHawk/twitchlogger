@@ -12,9 +12,35 @@
 		integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 
-<body>
+<body class="bg-dark">
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<a class="navbar-brand" style="color: whitesmoke;">Twitch Logs</a>
+		<button class="navbar-toggler" data-target="#my-nav" data-toggle="collapse" aria-controls="my-nav" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div id="my-nav" class="collapse navbar-collapse">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item">
+					<a class="nav-link" href="/">Log Viewer</a>
+				</li>
+				<li class="nav-item active">
+					<a class="nav-link" href="/manage">Manage Logged Channels<span class="sr-only">(current)</span></a>
+				</li>
+			</ul>
+		</div>
+		<form class="form-inline">
+			<input class="form-control mr-sm-2" type="text" placeholder="Search (TODO)">
+		</form>
+		<form class="form-inline" action="/manage" method="POST">
+			{% csrf_token %}
+			<input type="hidden" name="action" value="add">
+			<input class="form-control mr-sm-2" name="channel" type="text" placeholder="Add channel">
+			<button class="btn btn-success" type="submit">Subscribe</button>
+		</form>
+		
+	</nav>
 	{% if tableBody %}
-	<table class="table">
+	<table class="table table-dark table-bordered table-striped">
 		<thead>
 			<tr>
 				<th>Channel</th>
@@ -28,7 +54,7 @@
 		</tbody>
 	</table>
 	{% else %}
-	<h3>No Channels subscribed</h3>
+	<h3 style="color: whitesmoke; margin: 10px;">No Channels subscribed</h3>
 	{% endif %}
 	<!-- Optional JavaScript -->
 	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
