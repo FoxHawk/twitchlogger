@@ -146,6 +146,6 @@ def getUserData(userID: str):
 	if (resp.status_code != 200):
 		return False
 	
-	data = json.loads(resp.text)[0]
+	data = json.loads(resp.text)["data"][0]
 
 	return data
