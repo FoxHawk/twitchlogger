@@ -13,6 +13,7 @@
 </head>
 
 <body>
+	{% if tableBody %}
 	<table class="table">
 		<thead>
 			<tr>
@@ -21,9 +22,14 @@
 			</tr>
 		</thead>
 		<tbody>
-			{{ tableBody }}
+			{% for r in tableBody %}
+				{{ r }}
+			{% endfor %}
 		</tbody>
 	</table>
+	{% else %}
+	<h3>No Channels subscribed</h3>
+	{% endif %}
 	<!-- Optional JavaScript -->
 	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
