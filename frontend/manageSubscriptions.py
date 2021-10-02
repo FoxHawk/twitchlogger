@@ -40,7 +40,8 @@ def subscribeToChannel(channel: str):
 		return False
 
 	if(response["data"][0]["status"] == "webhook_callback_verification_pending"): #Check that the status is verification pending
-		return response["data"][0]["id"] #return the id of the subscribed event
+		return True #return the id of the subscribed event
+	return False
 
 def unsubscribeFromChannel(channel: str):
 	global bearerToken
