@@ -112,6 +112,12 @@ def getBearerToken():
 	return True
 
 def getUserID(channel: str):
+	global bearerToken
+
+	#check if we have a bearer token already saved, if not, fetch one
+	if (bearerToken == None and not getBearerToken()):
+		return False #return false if we cannot get a bearer token
+
 	#send request to twitch api endpoint to get user info
 	resp = requests.get("https://api.twitch.tv/helix/users", params={"login": channel}, headers={
 		"Client-ID": clientID, "Authorization": "Bearer " + bearerToken["access_token"]})
@@ -126,3 +132,20 @@ def getUserID(channel: str):
 		return data["data"][0]["id"]
 	
 	return False #if the fields do not exist, return false
+
+def getUserData(userID: str):
+	global bearerToken
+
+	#check if we have a bearer token already saved, if not, fetch one
+	if (bearerToken == None and not getBearerToken()):
+		return False #return false if we cannot get a bearer token
+
+	resp = requests.get("https://api.twitch.tv/helix/users/", params={"id": userID}, headers={
+		"Client-ID": clientID, "Authorization": "Bearer " + bearerToken["access_token"]})
+	
+	if (resp.status_code != 200):
+		return False
+	
+	data = json.loads(resp.text)[0]
+
+	return data
