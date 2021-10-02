@@ -1,4 +1,11 @@
 <tr>
 	<td scope="row">{{ channel }}</td>
 	<td>{{ id }}</td>
+	<td><form action="/manage" method="post">
+		{% csrf_token %}
+		<input type="hidden" name="channel" value="{{ channel }}">
+		<input type="hidden" name="action" value="delete">
+		<button type="submit" class="btn btn-primary" >Unsubscribe</button>
+	</form>
+</td>
 </tr>
