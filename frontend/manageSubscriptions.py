@@ -31,6 +31,9 @@ def subscribeToChannel(channel: str):
 	#make the twitch api web request
 	resp = requests.post(url, data=json.dumps(body), headers={"Client-ID": clientID, "Authorization": "Bearer " + bearerToken["access_token"], "Content-Type": "application/json"})
 
+	if(resp.status_code == 409): #if the api returns error 409 conflict, the channel is already subscribed to, so return true
+		return True
+
 	if (not resp.ok): #if the api request returns an error code, return false
 		return False
 
