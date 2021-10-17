@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse
 from django.template import loader
 import json
-from .. import manageSubscriptions
+import manageSubscriptions
 
 # Create your views here.
 

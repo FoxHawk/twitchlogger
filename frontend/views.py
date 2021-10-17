@@ -5,7 +5,7 @@ from django.template import loader
 from django.utils.safestring import mark_safe
 import requests
 from twitchEvents.models import LogEntry
-from . import manageSubscriptions
+from api import manageSubscriptions
 
 # Create your views here.
 
