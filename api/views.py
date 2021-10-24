@@ -3,14 +3,22 @@ from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse
 from django.template import loader
 import json
-import manageSubscriptions
+from . import manageSubscriptions
 
 # Create your views here.
 
 def fetchSubbedEvents(request: HttpRequest):
-	events = manageSubscriptions.getSubscribedEvents()
+	data = manageSubscriptions.getSubscribedEvents()
+	
+	rows = []
 
-	return HttpResponse(json.dumps(events))
+	for i in data:
+		r = {}
+		r["channel"] = manageSubscriptions.getUserData(i[1])["display_name"]
+		r["id"] = i[0]
+		rows.append(r)
+
+	return HttpResponse(json.dumps(rows))
 
 def fetchLogs(request: HttpRequest):
 	pass
