@@ -10,7 +10,6 @@ $.get("api/subbedevents", function(data) {
 	else
 	{
 		data = JSON.parse(data);
-		tbody.innerText = "";
 		for (i in data)
 		{
 			temp = document.getElementsByTagName("template")[0].content.querySelector("tr");
@@ -18,7 +17,7 @@ $.get("api/subbedevents", function(data) {
 	
 			temp.getElementsByTagName("td")[0].innerText = data[i].channel;
 			temp.getElementsByTagName("td")[1].innerText = data[i].id;
-			temp.getElementsByTagName("input")[0].setAttribute("value", data[i].channel);
+			temp.getElementsByTagName("input")[1].setAttribute("value", data[i].channel);
 			tbody.appendChild(temp);
 		}
 	}
