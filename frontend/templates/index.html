@@ -44,10 +44,24 @@
 					<th>Length</th>
 				</tr>
 			</thead>
-				{{ table }}
+			<tbody>
 			</tbody>
 		</table>
 	</div>
+	
+	<div class="spinner-border text-light d-flex justify-content-center" style="margin-left: 50%; margin-top: 25%;" role="status">
+		<span class="sr-only">Loading...</span>
+	</div>
+
+	<template>
+		<tr>
+			<td scope="row">{{ title }}</td>
+			<td>{{ streamer }}</td>
+			<td>{{ startedAt }}</td>
+			<td>{{ Length }}</td>
+		</tr>
+	</template>
+
 	<!-- Optional JavaScript -->
 	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -59,6 +73,9 @@
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
 		integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
 		crossorigin="anonymous"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	{% load static %}
+	<script src="{% static 'frontend/loadLogs.js' %}"></script>
 </body>
 
 </html>

@@ -1,9 +1,9 @@
 from django.http.response import HttpResponseBadRequest, HttpResponseServerError
-from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse
-from django.template import loader
 import json
+from django.core import serializers
 from . import manageSubscriptions
+from twitchEvents.models import LogEntry
 
 # Create your views here.
 
@@ -21,4 +21,8 @@ def fetchSubbedEvents(request: HttpRequest):
 	return HttpResponse(json.dumps(rows))
 
 def fetchLogs(request: HttpRequest):
-	pass
+	logs = LogEntry.objects.all()
+	data = serializers.serialize("json", logs)
+
+	return HttpResponse(data)
+
