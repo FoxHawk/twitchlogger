@@ -5,7 +5,7 @@ from django.template import loader
 from django.utils.safestring import mark_safe
 import requests
 from twitchEvents.models import LogEntry
-from . import manageSubscriptions
+from api import manageSubscriptions
 
 # Create your views here.
 
@@ -43,22 +43,6 @@ def manageAdd(request: HttpRequest):
 		return manageGet(request)
 
 def manageGet(request: HttpRequest):
-	data = manageSubscriptions.getSubscribedEvents()
-
 	template = loader.get_template("manage.html")
-	row = loader.get_template("manage/tableTemplate.html")
-
-	rows = []
-
-	for i in data:
-		r = {}
-		r["channel"] = manageSubscriptions.getUserData(i[1])["display_name"]
-		r["id"] = i[0]
-		rows.append(row.render(context=r, request=request))
-
-	if (len(rows) == 0):
-		return render(request, "manage.html")
-	
 	context = {}
-	context["tableBody"] = rows
 	return HttpResponse(template.render(context=context, request=request))

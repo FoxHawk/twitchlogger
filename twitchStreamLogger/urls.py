@@ -20,5 +20,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
 	path('', include('frontend.urls')),
-	path('logger/', include("twitchEvents.urls"))
+	path('logger/', include("twitchEvents.urls")),
+	path('api/', include("api.urls"))
 ]
