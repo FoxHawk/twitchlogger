@@ -6,4 +6,3 @@ COPY . /app
 
 RUN pip install --no-cache-dir fastapi
 RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
-RUN cp /app/asgi.py /app/main.py
