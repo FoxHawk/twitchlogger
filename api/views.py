@@ -8,7 +8,9 @@ import manageSubscriptions
 # Create your views here.
 
 def fetchSubbedEvents(request: HttpRequest):
-	pass
+	events = manageSubscriptions.getSubscribedEvents()
+
+	return HttpResponse(json.dumps(events))
 
 def fetchLogs(request: HttpRequest):
 	pass
