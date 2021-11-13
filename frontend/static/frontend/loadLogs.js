@@ -11,16 +11,23 @@ $.get("api/loadlogs", function(data) {
 	else
 	{
 		data = JSON.parse(data);
-		data = data["fields"]
+
+		for (i in data)
+		{
+			data[i] = data[i]["fields"]
+		}
+
 		for (i in data)
 		{
 			temp = document.getElementsByTagName("template")[0].content.querySelector("tr");
 			temp = document.importNode(temp, true);
+
+			var timestamp = new Date(data[i].startedAt)
 	
-			temp.getElementsByTagName("td")[0].innerText = data[i].title;
+			temp.getElementsByTagName("td")[0].innerText = "TODO" //data[i].title;
 			temp.getElementsByTagName("td")[1].innerText = data[i].channel;
-			temp.getElementsByTagName("td")[2].innerText = data[i].startedAt;
-			temp.getElementsByTagName("td")[3].innerText = data[i].length;
+			temp.getElementsByTagName("td")[2].innerText = timestamp.toLocaleString();
+			temp.getElementsByTagName("td")[3].innerText = "TODO" //data[i].length;
 			tbody.appendChild(temp);
 		}
 	}
