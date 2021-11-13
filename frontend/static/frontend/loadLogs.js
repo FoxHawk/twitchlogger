@@ -24,10 +24,10 @@ $.get("api/loadlogs", function(data) {
 
 			var timestamp = new Date(data[i].startedAt)
 	
-			temp.getElementsByTagName("td")[0].innerText = "TODO" //data[i].title;
+			temp.getElementsByTagName("td")[0].innerText = data[i].title;
 			temp.getElementsByTagName("td")[1].innerText = data[i].channel;
 			temp.getElementsByTagName("td")[2].innerText = timestamp.toLocaleString();
-			temp.getElementsByTagName("td")[3].innerText = "TODO" //data[i].length;
+			temp.getElementsByTagName("td")[3].innerText = data[i].game;
 			tbody.appendChild(temp);
 		}
 	}
