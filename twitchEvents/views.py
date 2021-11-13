@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 import json
 
+from api import manageSubscriptions
 from .models import LogEntry
 
 # Create your views here.
@@ -19,6 +20,8 @@ def endpoint(request: HttpRequest):
 
 	event = data["event"]
 
-	le = LogEntry(channel=event["broadcaster_user_name"], startedAt=event["started_at"], eventID=event["id"], type=event["type"])
+	chanData = manageSubscriptions.getChannelData(event["roadcaster_user_id"])
+
+	le = LogEntry(channel=event["broadcaster_user_name"], startedAt=event["started_at"], eventID=event["id"], game=chanData["game_name"], title=chanData["title"])
 	le.save()
 	return HttpResponse()
