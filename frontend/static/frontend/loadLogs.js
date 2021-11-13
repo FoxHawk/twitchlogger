@@ -11,6 +11,7 @@ $.get("api/loadlogs", function(data) {
 	else
 	{
 		data = JSON.parse(data);
+		data = data["fields"]
 		for (i in data)
 		{
 			temp = document.getElementsByTagName("template")[0].content.querySelector("tr");
