@@ -36,15 +36,15 @@
 
 	<div style="margin: 50px;">
 		<table class="table table-dark table-bordered table-striped">
-			<thead>
-				<tr>
-					<th>Title</th>
-					<th>Streamer</th>
-					<th>Started At</th>
-					<th>Length</th>
+			<thead class="container">
+				<tr class="row">
+					<th class="col-3">Title</th>
+					<th class="col-3">Streamer</th>
+					<th class="col-3">Started At</th>
+					<th class="col-3">Length</th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody class="container">
 			</tbody>
 		</table>
 	</div>
@@ -54,11 +54,11 @@
 	</div>
 
 	<template>
-		<tr>
-			<td scope="row">{{ title }}</td>
-			<td>{{ streamer }}</td>
-			<td>{{ startedAt }}</td>
-			<td>{{ Length }}</td>
+		<tr class="row">
+			<td class="col-3" scope="row">{{ title }}</td>
+			<td class="col-3">{{ streamer }}</td>
+			<td class="col-3">{{ startedAt }}</td>
+			<td class="col-3">{{ Length }}</td>
 		</tr>
 	</template>
 
