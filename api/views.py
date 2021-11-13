@@ -21,7 +21,7 @@ def fetchSubbedEvents(request: HttpRequest):
 	return HttpResponse(json.dumps(rows))
 
 def fetchLogs(request: HttpRequest):
-	logs = LogEntry.objects.all()
+	logs = LogEntry.objects.all().order_by("-startedAt")
 	data = serializers.serialize("json", logs)
 
 	return HttpResponse(data)
