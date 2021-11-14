@@ -16,7 +16,7 @@ $.get("api/subbedevents", function(data) {
 			temp = document.importNode(temp, true);
 	
 			temp.getElementsByTagName("td")[0].innerText = data[i].channel;
-			temp.getElementsByTagName("td")[1].innerText = data[i].id;
+			temp.getElementsByTagName("td")[1].innerText = data[i].status;
 			temp.getElementsByTagName("input")[1].setAttribute("value", data[i].channel);
 			tbody.appendChild(temp);
 		}

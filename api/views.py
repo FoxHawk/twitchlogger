@@ -15,7 +15,7 @@ def fetchSubbedEvents(request: HttpRequest):
 	for i in data:
 		r = {}
 		r["channel"] = manageSubscriptions.getUserData(i[1])["display_name"]
-		r["id"] = i[0]
+		r["status"] = i[0]
 		rows.append(r)
 
 	return HttpResponse(json.dumps(rows))
