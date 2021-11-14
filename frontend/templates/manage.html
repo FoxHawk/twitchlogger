@@ -41,13 +41,14 @@
 	</nav>
 	<div style="margin: 50px;">
 		<table class="table table-dark table-bordered table-striped">
-			<thead>
+			<thead class="container">
 				<tr>
-					<th>Channel</th>
-					<th>Status</th>
+					<th class="col-4">Channel</th>
+					<th class="col-4">Status</th>
+					<th class="col-4"></th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody class="container">
 			</tbody>
 		</table>
 	</div>
@@ -58,9 +59,9 @@
 
 	<template>
 		<tr>
-			<td scope="row" id="channel"></td>
-			<td id="id"></td>
-			<td><form action="/manage" method="post">
+			<td class="col-4" scope="row" id="channel"></td>
+			<td class="col-4" id="id"></td>
+			<td class="col-4"><form action="/manage" method="post">
 				{% csrf_token %}
 				<input type="hidden" name="channel" value="">
 				<input type="hidden" name="action" value="delete">
