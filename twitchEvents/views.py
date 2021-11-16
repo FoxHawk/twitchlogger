@@ -20,7 +20,7 @@ def endpoint(request: HttpRequest):
 
 	event = data["event"]
 
-	chanData = manageSubscriptions.getChannelData(event["roadcaster_user_id"])
+	chanData = manageSubscriptions.getChannelData(event["broadcaster_user_id"])
 
 	le = LogEntry(channel=event["broadcaster_user_name"], startedAt=event["started_at"], eventID=event["id"], game=chanData["game_name"], title=chanData["title"])
 	le.save()
