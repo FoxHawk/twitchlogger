@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block header %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'frontend/dropdown.css' %}">
+{% endblock %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div style="margin: 50px;">
+	<div class="alert alert-danger" hidden>
+		<strong>Error</strong> Missing Data!
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<form method="post" action="/timereport" class="d-flex flex-column">
+		{% csrf_token %}
+		<div class="d-flex flex-row justify-content-center p-2">
+			<div class="dropdown p-2">
+				<button class="btn btn-light dropdown-toggle" type="button" id="dripdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					Channels
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="dropdownMenu1">
+					<li>
+						<label>
+							<input type="checkbox" id=chkAll> All
+						</label>
+					</li>
+					<div class="dropdown-divider"></div>
+					<li>
+						<label>
+							<input type="checkbox" name="Cheese"> Cheese
+						</label>
+					</li>
+					<li>
+						<label>
+							<input type="checkbox" name="Mushroom"> Mushroom
+						</label>
+					</li>
+				</ul>
+			</div>
+			<label for="fromdatetime" class="text-white p-2">From:</label>
+			<input type="datetime-local" name="From" id="fromdatetime" class="p-2">
+			<label for="todatetime" class="text-white p-2">To:</label>
+			<input type="datetime-local" name="To" id="todatetime" class="p-2">
+			<button type="submit" class="btn btn-light p-2" style="margin-left: 10px;">Submit</button>
+		</div>
+	</form>
+</div>
+
+<template>
+	<li>
+		<label>
+			<input type="checkbox" name="text"> text
+		</label>
+	</li>
+</template>
+{% endblock %}
+
+{% block scripts %}
+<script>
+	//toggle the checkbox visuals to either checked or unchecked
+	$(".checkbox-menu").on("change", "input[type='checkbox']", function() {
+		$(this).closest("li").toggleClass("active", this.checked);
+	});
+	//prevent dropdown from closing when item is clicked
+	jQuery('.dropdown-menu.allow-focus').on('click', function (e) {
+		e.stopPropagation();
+	});
+	//"all" checkbox functionality
+	$("#chkAll").on("click", function() {
+		$("input:checkbox").prop("checked", this.checked)
+	});
+</script>
+<script>
+	//get json from server
+	$.get("/api/getChannels", function(data){
+		data = JSON.parse(data);
+		template = document.getElementsByTagName("template")[0];
+		ul = document.getElementsByClassName("allow-focus")[0];
+
+		for (const i in data)
+		{
+			var temp = document.importNode(template, true);
+			temp.getElementsByTagName("input").innerText.replace("text", i);
+			ul.appendChild(temp);
+		}
+	});
+</script>
+{% endblock %}
