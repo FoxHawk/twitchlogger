@@ -46,3 +46,8 @@ def manageGet(request: HttpRequest):
 	template = loader.get_template("manage.html")
 	context = {}
 	return HttpResponse(template.render(context=context, request=request))
+
+def reports(request: HttpRequest):
+	template = loader.get_template("reports.html")
+	context = {}
+	return HttpResponse(template.render(context=context, request=request))
