@@ -48,7 +48,7 @@ def makeReport(request: HttpRequest):
 
 	for i in logs:
 		data.append({"channel": i.channel, "title": i.title, "game": i.game, "startedAt": i.startedAt})
-	print(data)
+
 	context = {}
 
 	#load the logs and current date into the context
