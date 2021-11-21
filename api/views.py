@@ -31,6 +31,16 @@ def fetchLogs(request: HttpRequest):
 
 	return HttpResponse(data)
 
+def getLoggedChannels(request: HttpRequest):
+	logs = LogEntry.objects.values("channel").distinct()
+
+	channels = []
+
+	for i in logs:
+		channels.append(i["channel"])
+	
+	return HttpResponse(json.dumps(channels))
+
 def makeReport(request: HttpRequest):
 	#get the from & to variables from the POST dict
 	dateFrom = request.POST["From"]

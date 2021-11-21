@@ -67,7 +67,7 @@
 </script>
 <script>
 	//get json from server
-	$.get("/api/subbedevents", function(data){
+	$.get("/api/getchannels", function(data){
 		data = JSON.parse(data);
 		template = document.getElementsByTagName("template")[0].content.querySelector("li");
 		ul = document.getElementsByClassName("allow-focus")[0];
@@ -75,7 +75,7 @@
 		for (const i of data)
 		{
 			var temp = document.importNode(template, true);
-			temp.querySelector("label").innerHTML = temp.querySelector("label").innerHTML.replaceAll("text", i.channel);
+			temp.querySelector("label").innerHTML = temp.querySelector("label").innerHTML.replaceAll("text", i);
 			ul.appendChild(temp);
 		}
 	});
