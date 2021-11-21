@@ -23,23 +23,13 @@
 					Channels
 					<span class="caret"></span>
 				</button>
-				<ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="dropdownMenu1">
+				<ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="dropdownMenu1" style="overflow-y: scroll; max-height: 500px;">
 					<li>
 						<label>
 							<input type="checkbox" id=chkAll> All
 						</label>
 					</li>
 					<div class="dropdown-divider"></div>
-					<li>
-						<label>
-							<input type="checkbox" name="Cheese"> Cheese
-						</label>
-					</li>
-					<li>
-						<label>
-							<input type="checkbox" name="Mushroom"> Mushroom
-						</label>
-					</li>
 				</ul>
 			</div>
 			<label for="fromdatetime" class="text-white p-2">From:</label>
@@ -77,15 +67,15 @@
 </script>
 <script>
 	//get json from server
-	$.get("/api/getChannels", function(data){
+	$.get("/api/subbedevents", function(data){
 		data = JSON.parse(data);
-		template = document.getElementsByTagName("template")[0];
+		template = document.getElementsByTagName("template")[0].content.querySelector("li");
 		ul = document.getElementsByClassName("allow-focus")[0];
 
-		for (const i in data)
+		for (const i of data)
 		{
 			var temp = document.importNode(template, true);
-			temp.getElementsByTagName("input").innerText.replace("text", i);
+			temp.querySelector("label").innerHTML = temp.querySelector("label").innerHTML.replaceAll("text", i.channel);
 			ul.appendChild(temp);
 		}
 	});
