@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.http.response import HttpResponseBadRequest, HttpResponseRedirect, HttpResponseServerError
 from django.http import HttpRequest, HttpResponse
 import json
@@ -31,34 +32,34 @@ def fetchLogs(request: HttpRequest):
 	return HttpResponse(data)
 
 def makeReport(request: HttpRequest):
-	request.POST.pop("csrfmiddlewaretoken") #remove the CSRF token from the POST dict
 	#get the from & to variables from the POST dict
-	dateFrom = request.POST.pop("From")
-	dateTo = request.POST.pop("To")
+	dateFrom = request.POST["From"]
+	dateTo = request.POST["To"]
 
 	channels = []
 	#get all of the remaining keys and put them into an array (the keys are the channel names)
 	for i in request.POST.keys():
-		channels.append(i)
+		if i != "From" and i != "To" and i != "csrfmiddlewaretoken":
+			channels.append(i)
 	#select all logs which are from the channels in the array and are between the from and to datetimes
-	logs = LogEntry.objects.filter(channel=channels, startedAt__gt=dateFrom, startedAt__lt=dateTo)
+	logs = LogEntry.objects.filter(channel__in=channels, startedAt__gt=timezone.make_aware(datetime.fromisoformat(dateFrom)), startedAt__lt=timezone.make_aware(datetime.fromisoformat(dateTo)))
 
 	data = []
 
 	for i in logs:
 		data.append({"channel": i.channel, "title": i.title, "game": i.game, "startedAt": i.startedAt})
-	
+	print(data)
 	context = {}
 
 	#load the logs and current date into the context
 	context["data"] = data
-	context["dateFrom"] = timezone(dateFrom)
-	context["dateTo"] = timezone(dateTo)
+	context["dateFrom"] = timezone.make_aware(datetime.fromisoformat(dateFrom))
+	context["dateTo"] = timezone.make_aware(datetime.fromisoformat(dateTo))
 	
 	#render the email message
-	html_message = render_to_string("mail.html", context=context)
+	html_message = render_to_string("api/mailReport.html", context=context)
 	plain_message = strip_tags(html_message) #remove html for a text-only version
 	#send the email
-	send_mail("Twitch Streams From Today", plain_message, "TwitchLog <twitchlogs@foxhawk.co.uk>", ["fox@foxhawk.co.uk"], html_message=html_message)
+	send_mail("Twitch Streams Report", plain_message, "TwitchLog <twitchlogs@foxhawk.co.uk>", ["fox@foxhawk.co.uk"], html_message=html_message)
 
 	return HttpResponseRedirect("/report") #Redirect back to the reports page
