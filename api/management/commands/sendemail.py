@@ -29,7 +29,7 @@ class Command(BaseCommand):
 		context["date"] = timezone.now().date().isoformat()
 		
 		#render the email message
-		html_message = render_to_string("mail.html", context=context)
+		html_message = render_to_string("api/mail.html", context=context)
 		plain_message = strip_tags(html_message) #remove html for a text-only version
 		#send the email
 		send_mail("Twitch Streams From Today", plain_message, "TwitchLog <twitchlogs@foxhawk.co.uk>", ["fox@foxhawk.co.uk"], html_message=html_message)
