@@ -6,6 +6,12 @@
 <form class="form-inline" action="">
 	<input class="form-control mr-sm-2" type="text" placeholder="Search">
 </form>
+<form class="form-inline" action="">
+	{% csrf_token %}
+	<input type="datetime-local" name="fromDate" id="">
+	<input type="datetime-local" name="toDate" id="">
+	<button class="btn btn-primary" type="button">Filter</button>
+</form>
 {% endblock %}
 
 {% block content %}
@@ -53,5 +59,15 @@
 			return $(this).text().toLocaleLowerCase().indexOf(search.val()) > -1; //custom case-insensitive search
 		}).parent().show();
 	});
+</script>
+<script>
+	window.addEventListener("load", function() {
+	const now = new Date();
+	now.setHours(0, 0, 0, 0);
+
+	$("input[name^='fromDate']").val(now.toISOString().slice(0, 19));
+	now.setHours(23, 59);
+	$("input[name^='toDate']").val(now.toISOString().slice(0, 19));
+});
 </script>
 {% endblock %}

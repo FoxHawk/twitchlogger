@@ -26,8 +26,15 @@ def fetchSubbedEvents(request: HttpRequest):
 	return HttpResponse(json.dumps(rows)) #respond with a json string of the data
 
 def fetchLogs(request: HttpRequest):
-	logs = LogEntry.objects.all().order_by("-startedAt") #Get all logs ordrred by startedAt descending (hence the "-" character)
-	data = serializers.serialize("json", logs) #Use django's json serialiser to convert the logs object to a json string
+	data = ""
+	if request.method == "POST" and "fromDate" in request.POST and "toDate" in request.POST:
+		logs = LogEntry.objects.filter(startedAt__gte=request.POST["fromDate"], startedAt__lte=request.POST["toDate"]).order_by("-startedAt")
+		data = serializers.serialize("json", logs)
+	else:
+		logs = LogEntry.objects.filter(startedAt__gte=timezone.now().replace(hour=0, minute=0, second=0), 
+		startedAt__lte=timezone.now().replace(hour=23, minute=59, second=0)).order_by("-startedAt")
+		#logs = LogEntry.objects.all().order_by("-startedAt") #Get all logs ordrred by startedAt descending (hence the "-" character)
+		data = serializers.serialize("json", logs) #Use django's json serialiser to convert the logs object to a json string
 
 	return HttpResponse(data)
 
