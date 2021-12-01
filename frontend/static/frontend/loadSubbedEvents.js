@@ -9,16 +9,18 @@ $.get("api/subbedevents", function(data) {
 	}
 	else
 	{
-		data = JSON.parse(data);
-		for (i in data)
+		data = JSON.parse(data); //parse json string into javascript objects
+		for (i in data) //for each log entry in the json object
 		{
+			//load the row template
 			temp = document.getElementsByTagName("template")[0].content.querySelector("tr");
 			temp = document.importNode(temp, true);
-	
+			//insert the json data into the rows
 			temp.getElementsByTagName("td")[0].innerText = data[i].channel;
 			temp.getElementsByTagName("td")[1].innerText = data[i].status;
 			temp.getElementsByTagName("input")[1].setAttribute("value", data[i].channel);
-			tbody.appendChild(temp);
+
+			tbody.appendChild(temp); //add the row element to the DOM
 		}
 	}
 });

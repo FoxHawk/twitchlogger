@@ -26,27 +26,31 @@ def fetchSubbedEvents(request: HttpRequest):
 	return HttpResponse(json.dumps(rows)) #respond with a json string of the data
 
 def fetchLogs(request: HttpRequest):
+	#TODO: redo if statements to reduce repeated code
 	data = ""
+	#if the request is a post request, check for a "fromDate" and "toDate" POST variable
 	if request.method == "POST" and "fromDate" in request.POST and "toDate" in request.POST:
+		#get logs between the fromDate and toDate (inclusive)
 		logs = LogEntry.objects.filter(startedAt__gte=request.POST["fromDate"], startedAt__lte=request.POST["toDate"]).order_by("-startedAt")
-		data = serializers.serialize("json", logs)
+		data = serializers.serialize("json", logs) #Use django's json serialiser to convert the logs object to a json string
 	else:
+		#get logs between the fromDate and toDate (inclusive)
 		logs = LogEntry.objects.filter(startedAt__gte=timezone.now().replace(hour=0, minute=0, second=0), 
 		startedAt__lte=timezone.now().replace(hour=23, minute=59, second=0)).order_by("-startedAt")
-		#logs = LogEntry.objects.all().order_by("-startedAt") #Get all logs ordrred by startedAt descending (hence the "-" character)
 		data = serializers.serialize("json", logs) #Use django's json serialiser to convert the logs object to a json string
 
 	return HttpResponse(data)
 
 def getLoggedChannels(request: HttpRequest):
+	#get every channel name that appears in the logs (distinct selects each value only once)
 	logs = LogEntry.objects.values("channel").distinct()
 
 	channels = []
-
+	#load the values into an array (simplified from a django model list object)
 	for i in logs:
 		channels.append(i["channel"])
 	
-	return HttpResponse(json.dumps(channels))
+	return HttpResponse(json.dumps(channels)) #return the channels as a json array
 
 def makeReport(request: HttpRequest):
 	#get the from & to variables from the POST dict
@@ -62,13 +66,13 @@ def makeReport(request: HttpRequest):
 	logs = LogEntry.objects.filter(channel__in=channels, startedAt__gt=timezone.make_aware(datetime.fromisoformat(dateFrom)), startedAt__lt=timezone.make_aware(datetime.fromisoformat(dateTo)))
 
 	data = []
-
+	#add log data to an array in the form of dicts (an array of dicts)
 	for i in logs:
 		data.append({"channel": i.channel, "title": i.title, "game": i.game, "startedAt": i.startedAt})
 
 	context = {}
 
-	#load the logs and current date into the context
+	#load the logs as well as the from and to datetimes
 	context["data"] = data
 	context["dateFrom"] = timezone.make_aware(datetime.fromisoformat(dateFrom))
 	context["dateTo"] = timezone.make_aware(datetime.fromisoformat(dateTo))

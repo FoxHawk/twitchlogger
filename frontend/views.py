@@ -31,26 +31,30 @@ def manage(request: HttpRequest):
 		return manageGet(request)
 
 def manageDelete(request: HttpRequest):
+	#attempt to unsubscribe from the twitch eventsub event
+	#if unsuccessful, return a 500 Server Error response
 	if (not manageSubscriptions.unsubscribeFromChannel(request.POST["channel"])):
 		return HttpResponseServerError()#TODO: Create Error template pages
 	else:
-		return manageGet(request)
+		return manageGet(request) #respond with the management page
 
 def manageAdd(request: HttpRequest):
+	#attempt to subscribe to the twitch eventsub event for when a channel goes live
+	#if unsuccessful, return a 500 Server Error response
 	if (not manageSubscriptions.subscribeToChannel(request.POST["channel"])):
 		return HttpResponseServerError()#TODO: Create Error template pages
 	else:
-		return manageGet(request)
+		return manageGet(request) #respond with the management page
 
 def manageGet(request: HttpRequest):
-	template = loader.get_template("manage.html")
+	template = loader.get_template("manage.html") #load the management page template
 	context = {}
-	return HttpResponse(template.render(context=context, request=request))
+	return HttpResponse(template.render(context=context, request=request)) #return the rendered template page
 
 def report(request: HttpRequest):
 	if(request.method == "POST"):
 		print(request.POST)
-
+	#load and render the template, then send a response with the rendered template
 	template = loader.get_template("report.html")
 	context = {}
 	return HttpResponse(template.render(context=context, request=request))

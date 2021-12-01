@@ -13,8 +13,9 @@ $("button").click(function() {
 		}
 		else
 		{
-			data = JSON.parse(data);
+			data = JSON.parse(data); //parse the json string into a javascript object
 
+			//adjust json object formatting
 			for (i in data)
 			{
 				data[i] = data[i]["fields"]
@@ -22,16 +23,18 @@ $("button").click(function() {
 
 			for (i in data)
 			{
+				//load table row template
 				temp = document.getElementsByTagName("template")[0].content.querySelector("tr");
 				temp = document.importNode(temp, true);
 
-				var timestamp = new Date(data[i].startedAt)
-			
+				var timestamp = new Date(data[i].startedAt) //load the startedAt value into a new Date object for localisation
+				//load values into table row
 				temp.getElementsByTagName("td")[0].innerText = data[i].title;
 				temp.getElementsByTagName("td")[1].innerText = data[i].channel;
 				temp.getElementsByTagName("td")[2].innerText = timestamp.toLocaleString();
 				temp.getElementsByTagName("td")[3].innerText = data[i].game;
-				tbody.append(temp);
+
+				tbody.append(temp); //add the row into the table
 			}
 		}
 	})
@@ -40,7 +43,7 @@ $("button").click(function() {
 $.get("api/loadlogs", function(data) {
 	let tbody = $("tbody");
 	let spinner = $(".spinner-border");
-	spinner.remove();
+	spinner.remove(); //remove the spinner object (may be removed entirely at some point)
 	
 	if(data == "" || data == "[]") //if there is no data, display an error message
 	{
@@ -48,8 +51,9 @@ $.get("api/loadlogs", function(data) {
 	}
 	else
 	{
-		data = JSON.parse(data);
+		data = JSON.parse(data); //parse the json string into a javascript object
 
+		//adjust the json object formatting
 		for (i in data)
 		{
 			data[i] = data[i]["fields"]
@@ -57,16 +61,18 @@ $.get("api/loadlogs", function(data) {
 
 		for (i in data)
 		{
+			//load table row template
 			temp = document.getElementsByTagName("template")[0].content.querySelector("tr");
 			temp = document.importNode(temp, true);
 
-			var timestamp = new Date(data[i].startedAt)
-	
+			var timestamp = new Date(data[i].startedAt) //load the startedAt value into a new Date object
+			//insert values into row columns
 			temp.getElementsByTagName("td")[0].innerText = data[i].title;
 			temp.getElementsByTagName("td")[1].innerText = data[i].channel;
 			temp.getElementsByTagName("td")[2].innerText = timestamp.toLocaleString();
 			temp.getElementsByTagName("td")[3].innerText = data[i].game;
-			tbody.append(temp);
+
+			tbody.append(temp); //add the row to the table 
 		}
 	}
 });
