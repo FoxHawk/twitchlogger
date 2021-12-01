@@ -4,7 +4,7 @@
 
 {% block navbar %}
 <form class="form-inline">
-	<input class="form-control mr-sm-2" type="text" placeholder="Search (TODO)">
+	<input class="form-control mr-sm-2" type="text" placeholder="Search" name="search">
 </form>
 <form class="form-inline" action="/manage" method="POST">
 	{% csrf_token %}
@@ -51,4 +51,17 @@
 {% block scripts %}
 {% load static %}
 <script src="{% static 'frontend/loadSubbedEvents.js' %}" type="text/javascript"></script>
+<script>
+	let search = $("input[name^='search']");
+	//add event listener to the input event
+	//input event fires whenever the text is changed
+	search.on("input", function(){
+		let table = $("table").find("tbody > tr"); //all table rows
+		table.find("td").parent().hide(); //hide all table rows
+		//only show rows where the text in the search box is contained in the streamer's name
+		table.find("td[id^='channel']").filter(function() {
+			return $(this).text().toLocaleLowerCase().indexOf(search.val()) > -1; //custom case-insensitive search
+		}).parent().show();
+	});
+</script>
 {% endblock %}
