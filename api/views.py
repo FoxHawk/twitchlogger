@@ -26,19 +26,23 @@ def fetchSubbedEvents(request: HttpRequest):
 	return HttpResponse(json.dumps(rows)) #respond with a json string of the data
 
 def fetchLogs(request: HttpRequest):
-	#TODO: redo if statements to reduce repeated code
 	data = ""
+	fromDate, toDate = None
+
 	#if the request is a post request, check for a "fromDate" and "toDate" POST variable
 	if request.method == "POST" and "fromDate" in request.POST and "toDate" in request.POST:
-		#get logs between the fromDate and toDate (inclusive)
-		logs = LogEntry.objects.filter(startedAt__gte=request.POST["fromDate"], startedAt__lte=request.POST["toDate"]).order_by("-startedAt")
-		data = serializers.serialize("json", logs) #Use django's json serialiser to convert the logs object to a json string
-	else:
-		#get logs between the fromDate and toDate (inclusive)
-		logs = LogEntry.objects.filter(startedAt__gte=timezone.now().replace(hour=0, minute=0, second=0), 
-		startedAt__lte=timezone.now().replace(hour=23, minute=59, second=0)).order_by("-startedAt")
-		data = serializers.serialize("json", logs) #Use django's json serialiser to convert the logs object to a json string
-
+		#use fromDate and toDate from user
+		fromDate = request.POST["fromDate"]
+		toDate = request.POST["toDate"]
+	else: #
+		#get logs between the beginning of today and the end of today
+		fromDate = timezone.now().replace(hour=0, minute=0, second=0)
+		toDate = timezone.now().replace(hour=23, minute=59, second=59)
+	
+	#get logs between the fromDate and toDate (inclusive)
+	logs = LogEntry.objects.filter(startedAt__gte=fromDate, startedAt__lte=toDate).order_by("-startedAt")
+	#Use django's json serialiser to convert the logs object to a json string
+	data = serializers.serialize("json", logs)
 	return HttpResponse(data)
 
 def getLoggedChannels(request: HttpRequest):
