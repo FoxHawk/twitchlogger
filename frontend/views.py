@@ -1,20 +1,13 @@
 from django.http.response import HttpResponseBadRequest, HttpResponseServerError
-from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse
 from django.template import loader
-from django.utils.safestring import mark_safe
-import requests
-from twitchEvents.models import LogEntry
 from api import manageSubscriptions
 
 # Create your views here.
 
 def index(request: HttpRequest):
 	tp = loader.get_template("index.html")
-
-	context = {"a":"b"}
-
-	return HttpResponse(tp.render(context=context, request=request))
+	return HttpResponse(tp.render(request=request))
 
 def manage(request: HttpRequest):
 	if (request.method == "POST"):
