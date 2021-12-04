@@ -17,7 +17,8 @@ $.get("api/subbedevents", function(data) {
 			temp = document.importNode(temp, true);
 			//insert the json data into the rows
 			temp.getElementsByTagName("td")[0].innerText = data[i].channel;
-			temp.getElementsByTagName("td")[1].innerText = data[i].status;
+			temp.getElementsByTagName("td")[1].innerText = data[i].type;
+			temp.getElementsByTagName("td")[2].innerText = data[i].status;
 			temp.getElementsByTagName("input")[1].setAttribute("value", data[i].channel);
 
 			tbody.appendChild(temp); //add the row element to the DOM
