@@ -1,6 +1,7 @@
 from django.http.response import HttpResponseBadRequest, HttpResponseServerError
 from django.http import HttpRequest, HttpResponse
 from django.template import loader
+import requests
 from api import manageSubscriptions
 
 # Create your views here.
@@ -26,7 +27,9 @@ def manage(request: HttpRequest):
 def manageDelete(request: HttpRequest):
 	#attempt to unsubscribe from the twitch eventsub event
 	#if unsuccessful, return a 500 Server Error response
-	if (not manageSubscriptions.unsubscribeFromLiveEvent(request.POST["channel"])):
+	if not manageSubscriptions.unsubscribeFromLiveEvent(request.POST["channel"]):
+		return HttpResponseServerError()#TODO: Create Error template pages
+	elif not manageSubscriptions.unsubscribeFromUpdateEvent(requests.POST["channel"]):
 		return HttpResponseServerError()#TODO: Create Error template pages
 	else:
 		return manageGet(request) #respond with the management page
@@ -34,7 +37,9 @@ def manageDelete(request: HttpRequest):
 def manageAdd(request: HttpRequest):
 	#attempt to subscribe to the twitch eventsub event for when a channel goes live
 	#if unsuccessful, return a 500 Server Error response
-	if (not manageSubscriptions.subscribeToLiveEvent(request.POST["channel"])):
+	if not manageSubscriptions.subscribeToLiveEvent(request.POST["channel"]):
+		return HttpResponseServerError()#TODO: Create Error template pages
+	elif not manageSubscriptions.subscribeToUpdateEvent(request.POST["channel"]):
 		return HttpResponseServerError()#TODO: Create Error template pages
 	else:
 		return manageGet(request) #respond with the management page
