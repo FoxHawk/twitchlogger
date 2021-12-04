@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
 import json
 
 from api import manageSubscriptions
-from .models import LogEntry
+from .models import LogEntry, UpdateLogEntry
 
 @csrf_exempt
 def endpoint(request: HttpRequest):
@@ -20,9 +21,14 @@ def endpoint(request: HttpRequest):
 
 	event = data["event"] #all data under "event" variable
 
-	chanData = manageSubscriptions.getChannelData(event["broadcaster_user_id"]) #get the channel data from the channel's user id
+	if data["type"] == "channel.update": #if this is a channel update event
+		#get the username, game name, and title from the event data and add the current time to a new database entry
+		ule = UpdateLogEntry(channel=event["broadcaster_user_name"], recieved=timezone.now(), game=event["category_name"], title=event["title"])
+		ule.save()
+	elif data["type"] == "stream.online": #if this is a stream live event
+		chanData = manageSubscriptions.getChannelData(event["broadcaster_user_id"]) #get the channel data from the channel's user id
+		#create and save a new log entry
+		le = LogEntry(channel=event["broadcaster_user_name"], startedAt=event["started_at"], game=chanData["game_name"], title=chanData["title"])
+		le.save()
 
-	#create and save a new log entry
-	le = LogEntry(channel=event["broadcaster_user_name"], startedAt=event["started_at"], eventID=event["id"], game=chanData["game_name"], title=chanData["title"])
-	le.save()
 	return HttpResponse() #return a 200 OK response
