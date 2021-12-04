@@ -19,15 +19,16 @@ def fetchSubbedEvents(request: HttpRequest):
 	#package the data into an array of dicts
 	for i in data:
 		r = {}
-		r["channel"] = manageSubscriptions.getUserData(i[1])["display_name"]
-		r["status"] = i[0]
+		r["channel"] = manageSubscriptions.getUserData(i["condition"]["broadcaster_user_id"])["display_name"]
+		r["status"] = i["status"]
+		r["type"] = i["type"]
 		rows.append(r)
 
 	return HttpResponse(json.dumps(rows)) #respond with a json string of the data
 
 def fetchLogs(request: HttpRequest):
 	data = ""
-	fromDate, toDate = None
+	fromDate, toDate = None, None
 
 	#if the request is a post request, check for a "fromDate" and "toDate" POST variable
 	if request.method == "POST" and "fromDate" in request.POST and "toDate" in request.POST:
