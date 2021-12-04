@@ -26,7 +26,7 @@ def manage(request: HttpRequest):
 def manageDelete(request: HttpRequest):
 	#attempt to unsubscribe from the twitch eventsub event
 	#if unsuccessful, return a 500 Server Error response
-	if (not manageSubscriptions.unsubscribeFromChannel(request.POST["channel"])):
+	if (not manageSubscriptions.unsubscribeFromLiveEvent(request.POST["channel"])):
 		return HttpResponseServerError()#TODO: Create Error template pages
 	else:
 		return manageGet(request) #respond with the management page
@@ -34,7 +34,7 @@ def manageDelete(request: HttpRequest):
 def manageAdd(request: HttpRequest):
 	#attempt to subscribe to the twitch eventsub event for when a channel goes live
 	#if unsuccessful, return a 500 Server Error response
-	if (not manageSubscriptions.subscribeToChannel(request.POST["channel"])):
+	if (not manageSubscriptions.subscribeToLiveEvent(request.POST["channel"])):
 		return HttpResponseServerError()#TODO: Create Error template pages
 	else:
 		return manageGet(request) #respond with the management page
