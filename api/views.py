@@ -41,7 +41,7 @@ def fetchLogs(request: HttpRequest):
 		toDate = timezone.now().replace(hour=23, minute=59, second=59)
 	
 	#get logs between the fromDate and toDate (inclusive)
-	logs = LogEntry.objects.filter(startedAt__gte=fromDate, startedAt__lte=toDate).order_by("-startedAt")
+	logs = LogEntry.objects.filter(datetimestamp__gte=fromDate, datetimestamp__lte=toDate).order_by("-datetimestamp")
 	#Use django's json serialiser to convert the logs object to a json string
 	data = serializers.serialize("json", logs)
 	return HttpResponse(data)
@@ -68,12 +68,12 @@ def makeReport(request: HttpRequest):
 		if i != "From" and i != "To" and i != "csrfmiddlewaretoken":
 			channels.append(i)
 	#select all logs which are from the channels in the array and are between the from and to datetimes
-	logs = LogEntry.objects.filter(channel__in=channels, startedAt__gt=timezone.make_aware(datetime.fromisoformat(dateFrom)), startedAt__lt=timezone.make_aware(datetime.fromisoformat(dateTo)))
+	logs = LogEntry.objects.filter(channel__in=channels, datetimestamp__gt=timezone.make_aware(datetime.fromisoformat(dateFrom)), datetimestamp__lt=timezone.make_aware(datetime.fromisoformat(dateTo)))
 
 	data = []
 	#add log data to an array in the form of dicts (an array of dicts)
 	for i in logs:
-		data.append({"channel": i.channel, "title": i.title, "game": i.game, "startedAt": i.startedAt})
+		data.append({"channel": i.channel, "title": i.title, "game": i.game, "datetimestamp": i.datetimestamp})
 
 	context = {}
 

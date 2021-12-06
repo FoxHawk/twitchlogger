@@ -19,10 +19,11 @@
 	<table class="table table-dark table-bordered table-striped">
 		<thead class="container">
 			<tr class="row">
-				<th class="col-3">Title</th>
-				<th class="col-3">Streamer</th>
-				<th class="col-3">Started At</th>
-				<th class="col-3">Game</th>
+				<th class="col-4">Title</th>
+				<th class="col-2">Streamer</th>
+				<th class="col-2">Date &amp; Time</th>
+				<th class="col-2">Event Type</th>
+				<th class="col-2">Game</th>
 			</tr>
 		</thead>
 		<tbody class="container">
@@ -36,10 +37,11 @@
 
 <template>
 	<tr class="row">
-		<td class="col-3" scope="row">{{ title }}</td>
-		<td class="col-3" name="streamer">{{ streamer }}</td>
-		<td class="col-3">{{ startedAt }}</td>
-		<td class="col-3">{{ Length }}</td>
+		<td class="col-4" scope="row"></td>
+		<td class="col-2" name="streamer"></td>
+		<td class="col-2"></td>
+		<td class="col-2"></td>
+		<td class="col-2"></td>
 	</tr>
 </template>
 {% endblock %}
