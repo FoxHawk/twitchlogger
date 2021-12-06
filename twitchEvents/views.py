@@ -21,7 +21,7 @@ def endpoint(request: HttpRequest):
 
 	event = data["event"] #all data under "event" variable
 
-	le = LogEntry(channel=event["broadcaster_user_name"])
+	le = LogEntry(channel=event["broadcaster_user_name"], type=data["subscription"]["type"])
 
 	if data["subscription"]["type"] == "channel.update": #if this is a channel update event
 		le.datetimestamp=timezone.now()
