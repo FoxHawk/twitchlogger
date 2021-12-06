@@ -5,7 +5,7 @@ from django.utils import timezone
 import json
 
 from api import manageSubscriptions
-from .models import LogEntry, UpdateLogEntry
+from .models import LogEntry
 
 @csrf_exempt
 def endpoint(request: HttpRequest):
@@ -21,14 +21,26 @@ def endpoint(request: HttpRequest):
 
 	event = data["event"] #all data under "event" variable
 
+	le = LogEntry(channel=event["broadcaster_user_name"])
+
 	if data["subscription"]["type"] == "channel.update": #if this is a channel update event
-		#get the username, game name, and title from the event data and add the current time to a new database entry
-		ule = UpdateLogEntry(channel=event["broadcaster_user_name"], recieved=timezone.now(), game=event["category_name"], title=event["title"])
-		ule.save()
+		le.datetimestamp=timezone.now()
+		le.game = event["category_name"]
+		le.title = event["title"]
 	elif data["subscription"]["type"] == "stream.online": #if this is a stream live event
-		chanData = manageSubscriptions.getChannelData(event["broadcaster_user_id"]) #get the channel data from the channel's user id
-		#create and save a new log entry
-		le = LogEntry(channel=event["broadcaster_user_name"], startedAt=event["started_at"], game=chanData["game_name"], title=chanData["title"])
-		le.save()
+		chanData = manageSubscriptions.getChannelData(event["broadcaster_user_id"]) #get the stream info from the channel's user id
+
+		le.datetimestamp = event["started_at"] #the event holds when the stream went live
+		#get the game name and stream title from the channel data
+		le.game = chanData["game_name"]
+		le.title = chanData["title"]
+	elif data["subscription"]["type"] == "stream.offline": #if this is a stream offline event
+		#the stream offline event only contains the channel name
+		le.datetimestamp = timezone.now()
+		#we cannot get the stream data as the stream is offline
+		le.game = "N/A"
+		le.title = "N/A"
+	
+	le.save()
 
 	return HttpResponse() #return a 200 OK response

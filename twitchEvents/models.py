@@ -4,12 +4,7 @@ from django.db import models
 
 class LogEntry(models.Model):
 	channel = models.CharField(max_length=50)
-	startedAt = models.DateTimeField()
+	datetimestamp = models.DateTimeField()
 	game = models.CharField(max_length=100)
 	title = models.CharField(max_length=200)
-
-class UpdateLogEntry(models.Model):
-	channel = models.CharField(max_length=50)
-	recieved = models.DateTimeField()
-	game = models.CharField(max_length=100)
-	title = models.CharField(max_length=200)
+	type=models.CharField(max_length=20)
