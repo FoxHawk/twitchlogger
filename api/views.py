@@ -73,7 +73,7 @@ def makeReport(request: HttpRequest):
 	data = []
 	#add log data to an array in the form of dicts (an array of dicts)
 	for i in logs:
-		data.append({"channel": i.channel, "title": i.title, "game": i.game, "datetimestamp": i.datetimestamp})
+		data.append({"channel": i.channel, "title": i.title, "game": i.game, "datetimestamp": i.datetimestamp, "type": i.type})
 
 	context = {}
 

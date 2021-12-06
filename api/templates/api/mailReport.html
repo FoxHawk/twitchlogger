@@ -19,7 +19,8 @@
 				  <th>Channel</th>
 				  <th>Title</th>
 				  <th>Game</th>
-				  <th>Started At</th>
+				  <th>Date &amp; Time</th>
+				  <th>Event Type</th>
 			  </tr>
 		  </thead>
 		  <tbody>
@@ -28,7 +29,8 @@
 				  <td>{{ i.channel }}</td>
 				  <td>{{ i.title }}</td>
 				  <td>{{ i.game }}</td>
-				  <td>{{ i.startedAt|date:"d F Y H:i" }}</td>
+				  <td>{{ i.datetimestamp|date:"d F Y H:i" }}</td>
+				  <td>{{ i.type }}</td>
 			  </tr>
 			  {% endfor %}
 		  </tbody>

@@ -11,7 +11,7 @@ class Command(BaseCommand):
 
 	def handle(self, *args, **options):
 		#Get all logs starting at 8PM yesterday
-		logs = LogEntry.objects.filter(startedAt__gte=timezone.now().replace(hour=20, minute=0, second=0) - timedelta(days=1))
+		logs = LogEntry.objects.filter(datetimestamp__gte=timezone.now().replace(hour=20, minute=0, second=0) - timedelta(days=1))
 
 		#if there are no logs, just exit
 		if len(logs) == 0:
@@ -22,7 +22,7 @@ class Command(BaseCommand):
 
 		#put logs into an array for the html template context
 		for i in logs:
-			data.append({"channel": i.channel, "title": i.title, "game": i.game, "startedAt": i.startedAt})
+			data.append({"channel": i.channel, "title": i.title, "game": i.game, "datetimestamp": i.datetimestamp, "type": i.type})
 		
 		#load the logs and current date into the context
 		context["data"] = data
