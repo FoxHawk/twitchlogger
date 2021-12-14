@@ -7,11 +7,11 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
 class Command(BaseCommand):
-	help = "Sends a notification email with all the streams that started at 8PM yesterday"
+	help = "Sends a notification email with all the streams that started from 8PM yesterday"
 
 	def handle(self, *args, **options):
-		#Get all logs starting at 8PM yesterday
-		logs = LogEntry.objects.filter(datetimestamp__gte=timezone.now().replace(hour=20, minute=0, second=0) - timedelta(days=1))
+		#Get all stream online logs starting at 8PM yesterday
+		logs = LogEntry.objects.filter(datetimestamp__gte=timezone.now().replace(hour=20, minute=0, second=0) - timedelta(days=1), type="stream.online")
 
 		#if there are no logs, just exit
 		if len(logs) == 0:

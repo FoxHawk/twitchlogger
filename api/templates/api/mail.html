@@ -20,7 +20,6 @@
 				  <th>Title</th>
 				  <th>Game</th>
 				  <th>Date &amp; Time</th>
-				  <th>Event Type</th>
 			  </tr>
 		  </thead>
 		  <tbody>
@@ -30,7 +29,6 @@
 				  <td>{{ i.title }}</td>
 				  <td>{{ i.game }}</td>
 				  <td>{{ i.datetimestamp|date:"d F Y H:i" }}</td>
-				  <td>{{ i.type }}</td>
 			  </tr>
 			  {% endfor %}
 		  </tbody>
