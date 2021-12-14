@@ -3,6 +3,7 @@ from django.db import models
 # Create your models here.
 
 class LogEntry(models.Model):
+	eventid = models.CharField(max_length=100)
 	channel = models.CharField(max_length=50)
 	datetimestamp = models.DateTimeField()
 	game = models.CharField(max_length=100)
