@@ -19,9 +19,12 @@ def endpoint(request: HttpRequest):
 	if("subscription" not in data or "status" not in data["subscription"] or data["subscription"]["status"] != "enabled"):
 		return HttpResponseBadRequest()
 
+	if(LogEntry.objects.filter(eventid=request.headers["Twitch-Eventsub-Message-Id"]).count() != 0):
+		return HttpResponse() #we have already processed this event so return a 200 ok response without saving the duplicate event
+
 	event = data["event"] #all data under "event" variable
 
-	le = LogEntry(channel=event["broadcaster_user_name"], type=data["subscription"]["type"])
+	le = LogEntry(channel=event["broadcaster_user_name"], type=data["subscription"]["type"], eventid=request.headers["Twitch-Eventsub-Message-Id"])
 
 	if data["subscription"]["type"] == "channel.update": #if this is a channel update event
 		le.datetimestamp=timezone.now()
