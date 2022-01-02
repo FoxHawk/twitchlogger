@@ -102,9 +102,12 @@
 			$("#chkAll").prop("checked", false);
 		}
 	});
-	$(".checkbox-menu").on("change", "input[type='checkbox']", function() {
-		let table = $("table").find("tbody > tr"); //get all table rows
-		//get the text of all checked textboxes for filtering
+
+	function filterLogs()
+	{
+		let table = $("table").find("tbody > tr");
+		table.find("td").parent().hide(); //hide all table rows
+
 		let checkboxes = $(".checkbox-menu").find("label").filter(function() {
 			return $(this).find("input").prop("checked");
 		});
@@ -115,32 +118,36 @@
 				continue;
 			events.push($(i).text().trim());
 		}
-		table.find("td").parent().hide(); //hide all table rows
-		//only show event types that are checked
-		table.find("td[name^='eventtype']").filter(function() {
-			return events.indexOf($(this).text()) !== -1;
-		}).parent().show();
+
+		for (i of table)
+		{
+			if (events.indexOf($(i).find("td[name^='eventtype']").text()) !== -1)
+			{
+				if ($(i).find("td[name^='streamer']").text().toLocaleLowerCase().indexOf($("input.form-control").val()) > -1)
+				{
+					$(i).show();
+				}
+			}
+		}
+	}
+
+	$(".checkbox-menu").on("change", "input[type='checkbox']", function() {
+		filterLogs();
 	});
+
+	//add event listener to the input event. input event fires whenever the text is changed
+	$("input.form-control").on("input", function(){
+		filterLogs();
+	});
+
 	//prevent dropdown from closing when item is clicked
 	jQuery('.dropdown-menu.allow-focus').on('click', function (e) {
 		e.stopPropagation();
 	});
+
 	//"all" checkbox functionality
 	$("#chkAll").on("click", function() {
 		$("input:checkbox").prop("checked", this.checked)
-	});
-</script>
-<script>
-	let search = $("input.form-control");
-	//add event listener to the input event
-	//input event fires whenever the text is changed
-	search.on("input", function(){
-		let table = $("table").find("tbody > tr"); //all table rows
-		table.find("td").parent().hide(); //hide all table rows
-		//only show rows where the text in the search box is contained in the streamer's name
-		table.find("td[name^='streamer']").filter(function() {
-			return $(this).text().toLocaleLowerCase().indexOf(search.val()) > -1; //custom case-insensitive search
-		}).parent().show();
 	});
 </script>
 <script>
