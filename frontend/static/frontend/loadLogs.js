@@ -24,7 +24,7 @@ function loadTable(data)
 	}
 }
 
-$("button").click(function() {
+$("button.btn-primary").click(function() {
 	let dFrom = $("input[name^='fromDate']");
 	let dTo = $("input[name^='toDate']");
 	let token = $("input[name^='csrfmiddlewaretoken']");
