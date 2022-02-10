@@ -24,7 +24,7 @@ function loadTable(data)
 	}
 }
 
-$("button").click(function() {
+$("button.btn-primary").click(function() {
 	let dFrom = $("input[name^='fromDate']");
 	let dTo = $("input[name^='toDate']");
 	let token = $("input[name^='csrfmiddlewaretoken']");
@@ -41,6 +41,17 @@ $("button").click(function() {
 			loadTable(data);
 		}
 	})
+
+	//ensure all checkboxes are checked when the page is loaded
+	let checkboxes = $(".checkbox-menu").find("input");
+	for (i of checkboxes)
+	{
+		$(i).prop("checked", true);
+		$(i).closest("li").prop("active", true);
+	}
+	//clear the search bar
+	let search = $("input.form-control");
+	search.val("");
 });
 
 $.get("api/loadlogs", function(data) {

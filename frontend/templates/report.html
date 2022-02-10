@@ -55,6 +55,11 @@
 	//toggle the checkbox visuals to either checked or unchecked
 	$(".checkbox-menu").on("change", "input[type='checkbox']", function() {
 		$(this).closest("li").toggleClass("active", this.checked);
+		//if the "all" checkbox is checked, uncheck it
+		if($("#chkAll").prop("checked") === true && this.id !== "chkAll")
+		{
+			$("#chkAll").prop("checked", false);
+		}
 	});
 	//prevent dropdown from closing when item is clicked
 	jQuery('.dropdown-menu.allow-focus').on('click', function (e) {
