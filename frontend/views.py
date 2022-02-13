@@ -11,7 +11,7 @@ from twitchEvents.models import LogEntry
 def index(request: HttpRequest):
 	channels = None
 	if "fromDate" not in request.GET.keys() or "toDate" not in request.GET.keys():
-		channels = getStreamers(timezone.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=7), timezone.now())
+		channels = getStreamers(timezone.now().replace(hour=0, minute=0, second=0, microsecond=0), timezone.now())
 	else:
 		channels = getStreamers(request.GET["fromDate"], request.GET["toDate"])
 
