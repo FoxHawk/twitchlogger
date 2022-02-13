@@ -20,7 +20,7 @@ def index(request: HttpRequest):
 	return HttpResponse(tp.render(request=request, context={"streamers": channels}))
 
 def getStreamers(dateFrom: timezone, dateTo: timezone):
-	data = LogEntry.objects.filter(datetimestamp__gte=dateFrom, datetimestamp__lte=dateTo)
+	data = LogEntry.objects.filter(datetimestamp__gte=dateFrom, datetimestamp__lte=dateTo).exclude(game="N/A").exclude(game="")
 	channels = []
 
 	for i in data.values("channel").distinct():
@@ -28,8 +28,6 @@ def getStreamers(dateFrom: timezone, dateTo: timezone):
 	
 	for i in channels:
 		for j in data.filter(channel=i["name"]).values("datetimestamp", "game"):
-			if j["game"] == "N/A" or j["game"] == "":
-				continue
 			i["games"].append({"timestamp": j["datetimestamp"], "game": j["game"]})
 	
 	return channels
