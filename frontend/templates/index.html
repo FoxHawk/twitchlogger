@@ -8,148 +8,79 @@
 {% block title %}Log Viewer{% endblock %}
 
 {% block navbar %}
-<form class="form-inline" action="">
-	<input class="form-control mr-sm-2" type="text" placeholder="Search">
-</form>
-<div class="dropdown p-2">
-	<button class="btn btn-light dropdown-toggle" type="button" id="dripdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-		Event Type
-		<span class="caret"></span>
-	</button>
-	<ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="dropdownMenu1" style="overflow-y: scroll; max-height: 500px;">
-		<li>
-			<label>
-				<input type="checkbox" id=chkAll> All
-			</label>
-		</li>
-		<div class="dropdown-divider"></div>
-		<li>
-			<label>
-				<input type="checkbox"> stream.online
-			</label>
-		</li>
-		<li>
-			<label>
-				<input type="checkbox"> stream.offline
-			</label>
-		</li>
-		<li>
-			<label>
-				<input type="checkbox"> channel.update
-			</label>
-		</li>
-	</ul>
-</div>
-<form class="form-inline" action="">
-	{% csrf_token %}
-	<input type="datetime-local" name="fromDate" id="">
-	<input type="datetime-local" name="toDate" id="">
-	<button class="btn btn-primary" type="button">Filter</button>
+<form class="form-inline" action="/" method="get">
+	<input type="datetime-local" name="fromDate">
+	<input type="datetime-local" name="toDate">
+	<input class="btn btn-primary" type="submit" value="Filter">
 </form>
 {% endblock %}
 
 {% block content %}
-<div style="margin: 50px;">
-	<table class="table table-dark table-bordered table-striped">
-		<thead class="container">
-			<tr class="row">
-				<th class="col-4">Title</th>
-				<th class="col-2">Streamer</th>
-				<th class="col-2">Date &amp; Time</th>
-				<th class="col-2">Event Type</th>
-				<th class="col-2">Game</th>
-			</tr>
-		</thead>
-		<tbody class="container">
-		</tbody>
-	</table>
+{% if streamers %}
+<div class="card-columns" style="column-count: 2; margin-left: 10%; margin-right: 10%;">
+{% for streamer in streamers %}
+	<div class="card bg-secondary text-white" style="max-height: 1000px; overflow-y: auto;">
+		<div class="card-body">
+			<h4 class="card-title">{{ streamer.name }}</h4>
+			<table class="table table-dark table-striped">
+				<thead>
+					<th scope="col">Timestamp</th>
+					<th scope="col">Game</th>
+				</thead>
+				<tbody>
+					{% for i in streamer.games %}
+					<tr>
+						<td>{{ i.timestamp }}</td>
+						<td>{{ i.game }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+{% endfor %}
 </div>
-
-<div class="spinner-border text-light d-flex justify-content-center" style="margin-left: 50%; margin-top: 25%;" role="status">
-	<span class="sr-only">Loading...</span>
+{% else %}
+<p style="color: white; margin: 10px;">No Streams Loaded</p>
+<div class="card-columns" style="column-count: 2;">
+	<div class="card bg-secondary text-white" style="margin: 10px;">
+		<div class="card-header">
+			Streamer
+		</div>
+		<div class="card-body">
+			<p class="card-text">Text</p>
+		</div>
+	</div>
+	<div class="card bg-secondary text-white" style="margin: 10px;">
+		<div class="card-header">
+			Streamer
+		</div>
+		<div class="card-body">
+			<p class="card-text">Text</p>
+		</div>
+	</div>
+	<div class="card bg-secondary text-white" style="margin: 10px;">
+		<div class="card-header">
+			Streamer
+		</div>
+		<div class="card-body">
+			<p class="card-text">Text</p>
+		</div>
+	</div>
+	<div class="card bg-secondary text-white" style="margin: 10px;">
+		<div class="card-header">
+			Streamer
+		</div>
+		<div class="card-body">
+			<p class="card-text">Text</p>
+		</div>
+	</div>
 </div>
-
-<template>
-	<tr class="row">
-		<td class="col-4" scope="row"></td>
-		<td class="col-2" name="streamer"></td>
-		<td class="col-2"></td>
-		<td class="col-2" name="eventtype"></td>
-		<td class="col-2"></td>
-	</tr>
-</template>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}
 {% load static %}
-<script src="{% static 'frontend/loadLogs.js' %}" type="text/javascript"></script>
-<script>
-	//ensure all checkboxes are checked when the page is loaded
-	let checkboxes = $(".checkbox-menu").find("input");
-	for (i of checkboxes)
-	{
-		$(i).prop("checked", true);
-		$(i).closest("li").prop("active", true);
-	}
-</script>
-<script>
-	//toggle the checkbox visuals to either checked or unchecked
-	$(".checkbox-menu").on("change", "input[type='checkbox']", function() {
-		$(this).closest("li").toggleClass("active", this.checked);
-		//if the "all" checkbox is checked, uncheck it
-		if($("#chkAll").prop("checked") === true && this.id !== "chkAll")
-		{
-			$("#chkAll").prop("checked", false);
-		}
-	});
-
-	function filterLogs()
-	{
-		let table = $("table").find("tbody > tr");
-		table.find("td").parent().hide(); //hide all table rows
-
-		let checkboxes = $(".checkbox-menu").find("label").filter(function() {
-			return $(this).find("input").prop("checked");
-		});
-
-		let events = [];
-		for (i of checkboxes){
-			if($(i).text().trim() === "All")
-				continue;
-			events.push($(i).text().trim());
-		}
-
-		for (i of table)
-		{
-			if (events.indexOf($(i).find("td[name^='eventtype']").text()) !== -1)
-			{
-				if ($(i).find("td[name^='streamer']").text().toLocaleLowerCase().indexOf($("input.form-control").val()) > -1)
-				{
-					$(i).show();
-				}
-			}
-		}
-	}
-
-	$(".checkbox-menu").on("change", "input[type='checkbox']", function() {
-		filterLogs();
-	});
-
-	//add event listener to the input event. input event fires whenever the text is changed
-	$("input.form-control").on("input", function(){
-		filterLogs();
-	});
-
-	//prevent dropdown from closing when item is clicked
-	jQuery('.dropdown-menu.allow-focus').on('click', function (e) {
-		e.stopPropagation();
-	});
-
-	//"all" checkbox functionality
-	$("#chkAll").on("click", function() {
-		$("input:checkbox").prop("checked", this.checked)
-	});
-</script>
 <script>
 	window.addEventListener("load", function() {
 	const now = new Date();
