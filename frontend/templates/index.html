@@ -17,9 +17,9 @@
 
 {% block content %}
 {% if streamers %}
-<div class="card-columns" style="column-count: 2; margin-left: 10%; margin-right: 10%;">
+<div class="card-columns" style="column-count: 1; margin-left: 10%; margin-right: 10%;">
 {% for streamer in streamers %}
-	<div class="card bg-secondary text-white" style="max-height: 1000px; overflow-y: auto;">
+	<div class="card bg-secondary text-white" style="max-height: 300px; overflow-y: auto;">
 		<div class="card-body">
 			<h4 class="card-title">{{ streamer.name }}</h4>
 			<table class="table table-dark table-striped">
@@ -30,8 +30,8 @@
 				<tbody>
 					{% for i in streamer.games %}
 					<tr>
-						<td>{{ i.timestamp }}</td>
-						<td>{{ i.game }}</td>
+						<td style="width: 50%;">{{ i.timestamp }}</td>
+						<td style="width: 50%;">{{ i.game }}</td>
 					</tr>
 					{% endfor %}
 				</tbody>
