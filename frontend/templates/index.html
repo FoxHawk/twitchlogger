@@ -26,12 +26,14 @@
 				<thead>
 					<th scope="col">Timestamp</th>
 					<th scope="col">Game</th>
+					<th scope="col">Title</th>
 				</thead>
 				<tbody>
 					{% for i in streamer.games %}
 					<tr>
-						<td style="width: 50%;">{{ i.timestamp }}</td>
-						<td style="width: 50%;">{{ i.game }}</td>
+						<td style="width: 33%;">{{ i.timestamp }}</td>
+						<td style="width: 33%;">{{ i.game }}</td>
+						<td style="width: 33%;">{{ i.title }}</td>
 					</tr>
 					{% endfor %}
 				</tbody>
