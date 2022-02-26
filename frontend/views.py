@@ -29,7 +29,7 @@ def getStreamers(dateFrom: timezone, dateTo: timezone):
 		channels.append({"name": i["channel"], "games": []})
 	
 	for i in channels: #fill out the games that were played between the datetime durations
-		for j in data.filter(channel=i["name"]).values("datetimestamp", "game", "title"):
+		for j in data.filter(channel=i["name"]).order_by("-datetimestamp").values("datetimestamp", "game", "title"):
 			i["games"].append({"timestamp": j["datetimestamp"], "game": j["game"], "title": j["title"]})
 	
 	return channels
