@@ -116,7 +116,6 @@ def getSubscribedEvents():
 	events, page = getEventListPage()
 
 	while page != "":
-		print(page)
 		eventList, page = getEventListPage(page)
 		events = events + eventList
 
