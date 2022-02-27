@@ -108,25 +108,44 @@ def getSubscribedEvents():
 	global bearerToken
 
 	#check if we have a bearer token already saved, if not, fetch one
-	if (bearerToken == None and not getBearerToken()):
+	if bearerToken == None and not getBearerToken():
 		return False #return false if we cannot get a bearer token
-	#send a get request to the twitch event subscription endpoint which returns a list of all events we are subscribed to
-	resp = requests.get(url, headers={"Client-ID": clientID, "Authorization": "Bearer " + bearerToken["access_token"]})
+
+	events = []
+
+	events, page = getEventListPage()
+
+	while page != "":
+		print(page)
+		eventList, page = getEventListPage(page)
+		events = events + eventList
+
 	
-	if (not resp.ok): #if we do not get a 2xx response, return false
+	return events
+
+def getEventListPage(after = ""):
+	headers={"Client-ID": clientID, "Authorization": "Bearer " + bearerToken["access_token"]}
+	events = []
+
+	#send a get request to the twitch event subscription endpoint which returns a list of all events we are subscribed to
+	resp = requests.get(url+ "?after=" + after, headers=headers)
+
+	if not resp.ok: #if we do not get a 2xx response, return false
 		return False
 	
 	data = json.loads(resp.text) #load the text into python objects
 	
-	if ("data" not in data): #"data" is the top-level object in the json data we expect to get from twitch. if it isn't there, something went wrong
+	if "data" not in data: #"data" is the top-level object in the json data we expect to get from twitch. if it isn't there, something went wrong
 		return False
-
-	events = []
 	#load all events into a more convenient format (remove the top-level "data" object)
 	for i in data["data"]:
 		events.append(i)
 	
-	return events
+	if "cursor" in data["pagination"]:
+		return events, data["pagination"]["cursor"]
+	
+	return events, ""
+
 
 def getBearerToken():
 	global bearerToken
