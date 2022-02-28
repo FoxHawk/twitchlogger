@@ -25,7 +25,7 @@ def getStreamers(dateFrom: timezone, dateTo: timezone):
 	channels = []
 
 	#create a list entry for every unique channel
-	for i in data.values("channel").distinct().order_by("channel"):
+	for i in data.values("channel").distinct().extra(select={"lower_channel": "lower(channel)"}).order_by("lower_channel"):
 		channels.append({"name": i["channel"], "games": []})
 	
 	for i in channels: #fill out the games that were played between the datetime durations
