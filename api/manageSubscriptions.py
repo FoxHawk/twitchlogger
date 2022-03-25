@@ -10,9 +10,16 @@ bearerToken = None #will be set by getBearerToken()
 url = "https://api.twitch.tv/helix/eventsub/subscriptions" #the url for all event subscriptions
 
 def subscribeToAllEvents(channel: str):
-	subscribeToUpdateEvent(channel)
-	subscribeToOnlineEvent(channel)
-	subscribeToOfflineEvent(channel)
+	success = True
+
+	if not subscribeToUpdateEvent(channel):
+		success = False
+	if not subscribeToOnlineEvent(channel):
+		success = False
+	if not subscribeToOfflineEvent(channel):
+		success = False
+
+	return success
 
 def subscribeToUpdateEvent(channel: str):
 	return subscribeToEvent(channel, "channel.update")
@@ -58,9 +65,16 @@ def subscribeToEvent(channel: str, eventType: str):
 	return False
 
 def unsubscribeFromAllEvents(channel: str):
-	unsubscribeFromOfflineEvent(channel)
-	unsubscribeFromOnlineEvent(channel)
-	unsubscribeFromUpdateEvent(channel)
+	success = True
+
+	if not unsubscribeFromOfflineEvent(channel):
+		success = False
+	if not unsubscribeFromOnlineEvent(channel):
+		success = False
+	if not unsubscribeFromUpdateEvent(channel):
+		success = False
+	
+	return success
 
 def unsubscribeFromUpdateEvent(channel: str):
 	return unsubscribeFromEvent(channel, "channel.update")
@@ -214,3 +228,6 @@ def getChannelData(userID: str):
 	data = json.loads(resp.text)["data"][0]
 
 	return data
+
+if __name__ == "__main__":
+	unsubscribeFromAllEvents("digitalvagrant")
