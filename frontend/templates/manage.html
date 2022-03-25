@@ -13,8 +13,9 @@
 
 
 {% block content %}
-<div class="card-columns" style="column-count: 4; margin-left: 10%; margin-right: 10%;">
+<div class="row" style="margin: 20px;">
 	{% for event in events %}
+	<div class="col mb-4">
 		<div class="card bg-secondary text-white" style="max-height: 300px; overflow-y: auto;">
 			<div class="card-header text-white">
 				<h4 class="card-title">{{ event.channel }}</h4>
@@ -34,6 +35,8 @@
 				</a>
 			</div>
 		</div>
+	</div>
+
 	{% endfor %}
 	</div>
 {% endblock %}
