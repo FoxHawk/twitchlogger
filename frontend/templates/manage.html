@@ -3,7 +3,7 @@
 {% block title %}Manage{% endblock %}
 
 {% block navbar %}
-<form class="form-inline" action="/manage" method="POST">
+<form class="form-inline" action="/manage/addChannel" method="POST">
 	{% csrf_token %}
 	<input type="hidden" name="action" value="add">
 	<input class="form-control mr-sm-2" name="channel" type="text" placeholder="Add channel">
