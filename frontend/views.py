@@ -91,10 +91,10 @@ def manageDelete(request: HttpRequest):
 		return redirect("/manage") #respond with the management page
 
 def manageAdd(request: HttpRequest):
-	if "channel" not in request.GET:
+	if "channel" not in request.POST:
 		return HttpResponseBadRequest()
 
-	channelName = request.GET["channel"]
+	channelName = request.POST["channel"]
 	#attempt to subscribe to the twitch eventsub events
 	#if unsuccessful, return a 500 Server Error response
 	if not manageSubscriptions.subscribeToAllEvents(channelName):
