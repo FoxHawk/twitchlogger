@@ -35,7 +35,7 @@ def getStreamers(dateFrom: timezone, dateTo: timezone):
 	return channels
 
 def manage(request: HttpRequest):
-	data = ChannelEvents.objects.all().order_by("channelName")
+	data = ChannelEvents.objects.all().extra(select={"lower_channel": "lower(\"channelName\")"}).order_by("lower_channel")
 	events = []
 
 	for i in data:
