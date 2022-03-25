@@ -3,9 +3,8 @@
 {% block title %}Manage{% endblock %}
 
 {% block navbar %}
-<form class="form-inline" action="/manage" method="POST">
+<form class="form-inline" action="/manage/addChannel" method="POST">
 	{% csrf_token %}
-	<input type="hidden" name="action" value="add">
 	<input class="form-control mr-sm-2" name="channel" type="text" placeholder="Add channel">
 	<button class="btn btn-success" type="submit">Subscribe</button>
 </form>
@@ -13,8 +12,9 @@
 
 
 {% block content %}
-<div class="card-columns" style="column-count: 4; margin-left: 10%; margin-right: 10%;">
+<div class="row" style="margin: 20px;">
 	{% for event in events %}
+	<div class="col mb-4">
 		<div class="card bg-secondary text-white" style="max-height: 300px; overflow-y: auto;">
 			<div class="card-header text-white">
 				<h4 class="card-title">{{ event.channel }}</h4>
@@ -34,6 +34,8 @@
 				</a>
 			</div>
 		</div>
+	</div>
+
 	{% endfor %}
 	</div>
 {% endblock %}

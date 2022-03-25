@@ -35,7 +35,7 @@ def getStreamers(dateFrom: timezone, dateTo: timezone):
 	return channels
 
 def manage(request: HttpRequest):
-	data = ChannelEvents.objects.all().order_by("channelName")
+	data = ChannelEvents.objects.all().extra(select={"lower_channel": "lower(\"channelName\")"}).order_by("lower_channel")
 	events = []
 
 	for i in data:
@@ -91,10 +91,10 @@ def manageDelete(request: HttpRequest):
 		return redirect("/manage") #respond with the management page
 
 def manageAdd(request: HttpRequest):
-	if "channel" not in request.GET:
+	if "channel" not in request.POST:
 		return HttpResponseBadRequest()
 
-	channelName = request.GET["channel"]
+	channelName = request.POST["channel"]
 	#attempt to subscribe to the twitch eventsub events
 	#if unsuccessful, return a 500 Server Error response
 	if not manageSubscriptions.subscribeToAllEvents(channelName):
