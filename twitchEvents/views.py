@@ -1,8 +1,5 @@
-from asyncio import FastChildWatcher
 from datetime import datetime
-from operator import truediv
 from typing import Dict
-from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
