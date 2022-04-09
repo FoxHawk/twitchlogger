@@ -1,6 +1,7 @@
 from urllib import response
 from django.test import TestCase
 from twitchEvents import views
+from twitchEvents.models import LogEntry
 
 # Create your tests here.
 
@@ -64,10 +65,15 @@ class endpointEventTypeTests(TestCase):
 
 class endpointDuplicateRequestTests(TestCase):
 	def setUp(self):
-		pass
+		self.sendRequest()
 
 	def test_duplicate_event_post(self):
-		pass
+		response = self.sendRequest()
+		self.assertEqual(response.status_code, 200)
+
+	def sendRequest(self):
+		response = self.client.post(_post_path, {"subscription":{"id":"f1c2a387-161a-49f9-a165-0f21d7a4e1c4","type":"stream.online","version":"1","status":"enabled","cost":0,"condition":{"broadcaster_user_id":"113954840"},"transport":{"method":"webhook","callback":"https://example.com/webhooks/callback"},"created_at":"2019-11-16T10:11:12.123Z"},"event":{"id":"9001","broadcaster_user_id":"12826","broadcaster_user_login":"cool_user","broadcaster_user_name":"Cool_User","type":"live","started_at":"2020-10-11T10:11:12.123Z"}}, content_type="application/json", **{_twitch_header: "test"})
+		return response
 
 class endpointGetLogEntryTests(TestCase):
 	def setUp(self):
