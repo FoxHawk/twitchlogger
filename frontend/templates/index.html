@@ -58,16 +58,18 @@
 			</div>
 			<table class="table table-fixed table-dark table-striped">
 				<thead>
-					<th scope="col" class="col-4">Timestamp</th>
-					<th scope="col" class="col-4">Game</th>
+					<th scope="col" class="col-3">Timestamp</th>
+					<th scope="col" class="col-3">Game</th>
 					<th scope="col" class="col-4">Title</th>
+					<th scope="col" class="col-2">Event Type</th>
 				</thead>
 				<tbodys>
 					{% for i in streamer.games %}
 					<tr>
-						<td class="col-4">{{ i.timestamp|date:"dS M. Y, H:i" }}</td>
-						<td class="col-4">{{ i.game }}</td>
+						<td class="col-3">{{ i.timestamp|date:"dS M. Y, H:i" }}</td>
+						<td class="col-3">{{ i.game }}</td>
 						<td class="col-4">{{ i.title }}</td>
+						<td class="col-2">{{ i.type }}</td>
 					</tr>
 					{% endfor %}
 				</tbody>
@@ -86,10 +88,10 @@
 <script>
 	window.addEventListener("load", function() {
 	const now = new Date();
-	now.setHours(0, 0, 0, 0);
+	now.setUTCHours(0, 0, 0, 0);
 
 	$("input[name^='fromDate']").val(now.toISOString().slice(0, 19));
-	now.setHours(23, 59);
+	now.setUTCHours(23, 59);
 	$("input[name^='toDate']").val(now.toISOString().slice(0, 19));
 });
 </script>
