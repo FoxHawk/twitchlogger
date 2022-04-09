@@ -28,7 +28,7 @@ def endpoint(request: HttpRequest):
 		#Acknowledge the event
 		return HttpResponse()
 
-	log = getLogEntry(data, request) #get LogEntry object with channel data pre-populated
+	log = getLogEntry(data, request.headers) #get LogEntry object with channel data pre-populated
 
 	if data["subscription"]["type"] == "channel.update": #if this is a channel update event
 		log = handleStreamUpdateEvent(log, data)
@@ -84,7 +84,7 @@ def isDuplicateEvent(request: HttpRequest) -> bool:
 
 	return logs.count() != 0
 
-def getLogEntry(requestBody: Dict, request: HttpRequest) -> LogEntry:
+def getLogEntry(requestBody: Dict, headers: Dict) -> LogEntry:
 	"""Instantiates a new LogEvent object from the twitch api request
 
 	Args:
@@ -95,7 +95,7 @@ def getLogEntry(requestBody: Dict, request: HttpRequest) -> LogEntry:
 		LogEntry: The Instantiated LogEntry object
 	"""
 	type = requestBody["subscription"]["type"]
-	eventId = request.headers["Twitch-Eventsub-Message-Id"]
+	eventId = headers["Twitch-Eventsub-Message-Id"]
 
 	log = LogEntry(type=type, eventid=eventId)
 
