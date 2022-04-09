@@ -86,10 +86,10 @@
 <script>
 	window.addEventListener("load", function() {
 	const now = new Date();
-	now.setHours(0, 0, 0, 0);
+	now.setUTCHours(0, 0, 0, 0);
 
 	$("input[name^='fromDate']").val(now.toISOString().slice(0, 19));
-	now.setHours(23, 59);
+	now.setUTCHours(23, 59);
 	$("input[name^='toDate']").val(now.toISOString().slice(0, 19));
 });
 </script>
