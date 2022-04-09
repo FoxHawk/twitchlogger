@@ -10,21 +10,25 @@ from .models import LogEntry
 
 @csrf_exempt
 def endpoint(request: HttpRequest):
-	data = json.loads(request.body) #convert JSON post data to python object
-	print(data)
+	try:
+		data = json.loads(request.body) #convert JSON post data to python object
+		print(data) #TODO: remove
+	except json.decoder.JSONDecodeError:
+		#if the json library can't decode the body into valid json, return a 400 bad request response
+		return HttpResponseBadRequest()
 
 	#if the request is a twitch api challenge request, respond with the text in the "challenge" variable under "data" in the request JSON
 	if isChallengeRequest(data):
 		return HttpResponse(data["challenge"])
 	#Catch any requests that do not contain the fields that we expect to be there
-	if isBadRequest(data):
+	if isBadRequest(data, request.headers):
 		return HttpResponseBadRequest()
 	#Ignore any duplicate events
 	if(isDuplicateEvent(request)):
 		#Acknowledge the event
 		return HttpResponse()
 
-	log = getLogEntry(data, request) #get LogEntry object with channel data pre-populated
+	log = getLogEntry(data, request.headers) #get LogEntry object with channel data pre-populated
 
 	if data["subscription"]["type"] == "channel.update": #if this is a channel update event
 		log = handleStreamUpdateEvent(log, data)
@@ -40,7 +44,7 @@ def endpoint(request: HttpRequest):
 def isChallengeRequest(requestBody: Dict) -> bool:
 	return "challenge" in requestBody
 
-def isBadRequest(requestBody: Dict, request: HttpRequest) -> bool:
+def isBadRequest(requestBody: Dict, headers: Dict) -> bool:
 	"""Checks whether the twitch api request contains the correct json path
 
 	Args:
@@ -48,7 +52,7 @@ def isBadRequest(requestBody: Dict, request: HttpRequest) -> bool:
 		request (HttpRequest): The Http Request object from the twitch api request
 
 	Returns:
-		boolean: Whether the request is incorrect or not
+		boolean: Whether the request is incorrect or not (True on bad request)
 	"""
 	if "subscription" not in requestBody:
 		return True
@@ -59,7 +63,8 @@ def isBadRequest(requestBody: Dict, request: HttpRequest) -> bool:
 	if requestBody["subscription"]["status"] != "enabled":
 		return True
 
-	if "Twitch-Eventsub-Message-Id" not in request.headers:
+	if "Twitch-Eventsub-Message-Id" not in headers:
+		print("Missing headers", headers.values())
 		return True
 	
 	return False
@@ -79,7 +84,7 @@ def isDuplicateEvent(request: HttpRequest) -> bool:
 
 	return logs.count() != 0
 
-def getLogEntry(requestBody: Dict, request: HttpRequest) -> LogEntry:
+def getLogEntry(requestBody: Dict, headers: Dict) -> LogEntry:
 	"""Instantiates a new LogEvent object from the twitch api request
 
 	Args:
@@ -89,11 +94,10 @@ def getLogEntry(requestBody: Dict, request: HttpRequest) -> LogEntry:
 	Returns:
 		LogEntry: The Instantiated LogEntry object
 	"""
-	channel = requestBody["event"]["broadcast_user_name"]
 	type = requestBody["subscription"]["type"]
-	eventId = request.headers["Twitch-Eventsub-Message-Id"]
+	eventId = headers["Twitch-Eventsub-Message-Id"]
 
-	log = LogEntry(channel=channel, type=type, eventid=eventId)
+	log = LogEntry(type=type, eventid=eventId)
 
 	return log
 
@@ -110,8 +114,9 @@ def handleStreamUpdateEvent(log: LogEntry, requestBody: Dict) -> LogEntry:
 	eventData = requestBody["event"]
 	
 	log.datetimestamp = datetime.now()
-	log.game = eventData["cateory_name"]
+	log.game = eventData["category_name"]
 	log.title = eventData["title"]
+	log.channel = eventData["broadcaster_user_name"]
 
 	return log
 
@@ -132,6 +137,7 @@ def handleStreamLiveEvent(log: LogEntry, requestBody: Dict) -> LogEntry:
 	#get the game name and stream title from the channel data
 	log.game = channelData["game_name"]
 	log.title = channelData["title"]
+	log.channel = requestBody["event"]["broadcaster_user_name"]
 
 	return log
 
@@ -146,8 +152,10 @@ def handleStreamOfflineEvent(log: LogEntry, requestBody: Dict) -> LogEntry:
 		LogEntry: The LogEntry object with added data
 	"""
 
-	#the stream offline event only contains the channel name
-	log.datetimestamp = timezone.now()
-	#we cannot get the stream data as the stream is offline
+	log.datetimestamp = requestBody["subscription"]["created_at"]
+	#we cannot get the game or title if there isn't a live stream so use default values
 	log.game = "N/A"
 	log.title = "N/A"
+	log.channel = requestBody["event"]["broadcaster_user_name"]
+
+	return log
