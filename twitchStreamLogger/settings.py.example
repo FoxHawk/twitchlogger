@@ -20,12 +20,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ''
+# Example Key:
+SECRET_KEY = 'vyeALauDBK5JvmGo8c%VUyWUGr24^*HEj#Qk%#%4C84Bb^^TdgAKXU@bG&3wtTPYRM'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "192.168.0.121"]
+ALLOWED_HOSTS = ["localhost"]
 
 
 # Application definition
@@ -147,3 +148,6 @@ EMAIL_PORT=587
 EMAIL_HOST_USER=""
 EMAIL_HOST_PASSWORD=""
 EMAIL_USE_TLS=True
+
+TWITCH_CLIENT_ID = ""
+TWITCH_CLIENT_SECRET = ""
