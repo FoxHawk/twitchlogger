@@ -2,12 +2,40 @@ import requests
 import json
 from django.conf import settings
 
+class tokenHandler:
+	def __init__(self):
+		self._token = ""
+
+	def get_bearerToken(self):
+		if self._token == "":
+			self._tokenInfo = self.fetchBearerToken()
+			self._token = self._tokenInfo["access_token"]
+
+		return self._token
+
+	def fetchBearerToken(self):
+		#send request to the twitch api to get a bearer token from our client ID and client secret
+		resp = requests.post("https://id.twitch.tv/oauth2/token", params={"client_id": clientID, "client_secret": clientSecret, "grant_type": "client_credentials"})
+
+		#parse returned body data as json. Check if the field "access_token" is included
+		data = json.loads(resp.text)
+		if("access_token" not in data):
+			return False #return false if there isn't an access token in the response
+
+		bearerToken = data #set the global variable with the json data (dict)
+
+		return bearerToken
+
+	token = property(get_bearerToken)
+
 #client id and secret from twitch
 clientID = settings.TWITCH_CLIENT_ID
 clientSecret = settings.TWITCH_CLIENT_SECRET
 
-bearerToken = None #will be set by getBearerToken()
+tHandler = tokenHandler() #handles fetching the twitch bearer token from the twitch api
 url = "https://api.twitch.tv/helix/eventsub/subscriptions" #the url for all event subscriptions
+
+
 
 def subscribeToAllEvents(channel: str):
 	success = True
@@ -31,23 +59,19 @@ def subscribeToOfflineEvent(channel: str):
 	return subscribeToEvent(channel, "stream.offline")
 
 def subscribeToEvent(channel: str, eventType: str):
-	global bearerToken
+	global tHandler
 	global url
 
 	uid = getUserID(channel)
 	if(not uid): #if we couldn't get the user's ID, return false
 		return False
 
-	#check if we have a bearer token already saved, if not, fetch one
-	if (bearerToken == None and not getBearerToken()):
-		return False #return false if we cannot get a bearer token
-
 	body = {
 	"type":eventType, "version":"1", "condition":{"broadcaster_user_id":uid}, "transport": {
 		"method": "webhook", "callback": "https://twitch.foxhawk.co.uk/logger/endpoint", "secret": clientSecret}}
 
 	#make the twitch api web request
-	resp = requests.post(url, data=json.dumps(body), headers={"Client-ID": clientID, "Authorization": "Bearer " + bearerToken["access_token"], "Content-Type": "application/json"})
+	resp = requests.post(url, data=json.dumps(body), headers={"Client-ID": clientID, "Authorization": "Bearer " + tHandler.token, "Content-Type": "application/json"})
 
 	if(resp.status_code == 409): #if the api returns error 409 conflict, the channel is already subscribed to, so return true
 		return True
@@ -86,11 +110,7 @@ def unsubscribeFromOfflineEvent(channel: str):
 	return unsubscribeFromEvent(channel, "stream.offline")
 
 def unsubscribeFromEvent(channel: str, eventType: str):
-	global bearerToken
-	
-	#check if we have a bearer token already saved, if not, fetch one
-	if (bearerToken == None and not getBearerToken()):
-		return False #return false if we cannot get a bearer token
+	global tHandler
 
 	uid = getUserID(channel)
 	if(not uid): #if we couldn't get the user's ID, return false
@@ -101,7 +121,7 @@ def unsubscribeFromEvent(channel: str, eventType: str):
 	if(not eventId):
 		return False #return false if we could not get the event id
 	#send the http DELETE request to the twitch event endpoint
-	resp = requests.delete(url, headers={"Client-ID": clientID, "Authorization": "Bearer " + bearerToken["access_token"]}, params={"id": eventId})
+	resp = requests.delete(url, headers={"Client-ID": clientID, "Authorization": "Bearer " + tHandler.token}, params={"id": eventId})
 
 	if (not resp.ok):
 		return False #if we do not get a 2xx response, return false
@@ -119,11 +139,7 @@ def getEventFromID(userID: str, eventType: str):
 	return False #return false if we can't find the right event
 
 def getSubscribedEvents():
-	global bearerToken
-
-	#check if we have a bearer token already saved, if not, fetch one
-	if bearerToken == None and not getBearerToken():
-		return False #return false if we cannot get a bearer token
+	global tHandler
 
 	events = []
 
@@ -137,7 +153,7 @@ def getSubscribedEvents():
 	return events
 
 def getEventListPage(after = ""):
-	headers={"Client-ID": clientID, "Authorization": "Bearer " + bearerToken["access_token"]}
+	headers={"Client-ID": clientID, "Authorization": "Bearer " + tHandler.token}
 	events = []
 
 	#send a get request to the twitch event subscription endpoint which returns a list of all events we are subscribed to
@@ -159,30 +175,12 @@ def getEventListPage(after = ""):
 	
 	return events, ""
 
-
-def getBearerToken():
-	global bearerToken
-	#send request to the twitch api to get a bearer token from our client ID and client secret
-	resp = requests.post("https://id.twitch.tv/oauth2/token", params={"client_id": clientID, "client_secret": clientSecret, "grant_type": "client_credentials"})
-	
-	#parse returned body data as json. Check if the field "access_token" is included
-	data = json.loads(resp.text)
-	if("access_token" not in data):
-		return False #return false if there isn't an access token in the response
-	
-	bearerToken = data #set the global variable with the json data (dict)
-	return True
-
 def getUserID(channel: str):
-	global bearerToken
-
-	#check if we have a bearer token already saved, if not, fetch one
-	if (bearerToken == None and not getBearerToken()):
-		return False #return false if we cannot get a bearer token
+	global tHandler
 
 	#send request to twitch api endpoint to get user info
 	resp = requests.get("https://api.twitch.tv/helix/users", params={"login": channel}, headers={
-		"Client-ID": clientID, "Authorization": "Bearer " + bearerToken["access_token"]})
+		"Client-ID": clientID, "Authorization": "Bearer " + tHandler.token})
 	#if the api did not respond with code 200 then return false
 	if (resp.status_code != 200):
 		return False
@@ -196,14 +194,10 @@ def getUserID(channel: str):
 	return False #if the fields do not exist, return false
 
 def getUserData(userID: str):
-	global bearerToken
-
-	#check if we have a bearer token already saved, if not, fetch one
-	if (bearerToken == None and not getBearerToken()):
-		return False #return false if we cannot get a bearer token
+	global tHandler
 
 	resp = requests.get("https://api.twitch.tv/helix/users/", params={"id": userID}, headers={
-		"Client-ID": clientID, "Authorization": "Bearer " + bearerToken["access_token"]})
+		"Client-ID": clientID, "Authorization": "Bearer " + tHandler.token})
 	
 	if (resp.status_code != 200):
 		return False
@@ -213,14 +207,10 @@ def getUserData(userID: str):
 	return data
 
 def getChannelData(userID: str):
-	global bearerToken
-
-	#check if we have a bearer token already saved, if not, fetch one
-	if (bearerToken == None and not getBearerToken()):
-		return False #return false if we cannot get a bearer token
+	global tHandler
 
 	resp = requests.get("https://api.twitch.tv/helix/channels/", params={"broadcaster_id": userID}, headers={
-		"Client-ID": clientID, "Authorization": "Bearer " + bearerToken["access_token"]})
+		"Client-ID": clientID, "Authorization": "Bearer " + tHandler.token})
 	
 	if (resp.status_code != 200):
 		return False
