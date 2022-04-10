@@ -2,12 +2,38 @@ import requests
 import json
 from django.conf import settings
 
+class tokenHandler:
+	def __init__(self):
+		self.token = ""
+
+	def get_bearerToken(self):
+		if self.token == "":
+			self._tokenInfo = self.fetchBearerToken()
+			self.token = self._tokenInfo["access_token"]
+
+	def fetchBearerToken(self):
+		#send request to the twitch api to get a bearer token from our client ID and client secret
+		resp = requests.post("https://id.twitch.tv/oauth2/token", params={"client_id": clientID, "client_secret": clientSecret, "grant_type": "client_credentials"})
+
+		#parse returned body data as json. Check if the field "access_token" is included
+		data = json.loads(resp.text)
+		if("access_token" not in data):
+			return False #return false if there isn't an access token in the response
+
+		bearerToken = data #set the global variable with the json data (dict)
+
+		return bearerToken
+
+	token = property(get_bearerToken)
+
 #client id and secret from twitch
 clientID = settings.TWITCH_CLIENT_ID
 clientSecret = settings.TWITCH_CLIENT_SECRET
 
-bearerToken = None #will be set by getBearerToken()
+tHandler = tokenHandler() #handles fetching the twitch bearer token from the twitch api
 url = "https://api.twitch.tv/helix/eventsub/subscriptions" #the url for all event subscriptions
+
+
 
 def subscribeToAllEvents(channel: str):
 	success = True
@@ -31,23 +57,19 @@ def subscribeToOfflineEvent(channel: str):
 	return subscribeToEvent(channel, "stream.offline")
 
 def subscribeToEvent(channel: str, eventType: str):
-	global bearerToken
+	global tHandler
 	global url
 
 	uid = getUserID(channel)
 	if(not uid): #if we couldn't get the user's ID, return false
 		return False
 
-	#check if we have a bearer token already saved, if not, fetch one
-	if (bearerToken == None and not getBearerToken()):
-		return False #return false if we cannot get a bearer token
-
 	body = {
 	"type":eventType, "version":"1", "condition":{"broadcaster_user_id":uid}, "transport": {
 		"method": "webhook", "callback": "https://twitch.foxhawk.co.uk/logger/endpoint", "secret": clientSecret}}
 
 	#make the twitch api web request
-	resp = requests.post(url, data=json.dumps(body), headers={"Client-ID": clientID, "Authorization": "Bearer " + bearerToken["access_token"], "Content-Type": "application/json"})
+	resp = requests.post(url, data=json.dumps(body), headers={"Client-ID": clientID, "Authorization": "Bearer " + tHandler.token, "Content-Type": "application/json"})
 
 	if(resp.status_code == 409): #if the api returns error 409 conflict, the channel is already subscribed to, so return true
 		return True
