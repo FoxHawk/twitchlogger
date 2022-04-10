@@ -4,12 +4,14 @@ from django.conf import settings
 
 class tokenHandler:
 	def __init__(self):
-		self.token = ""
+		self._token = ""
 
 	def get_bearerToken(self):
-		if self.token == "":
+		if self._token == "":
 			self._tokenInfo = self.fetchBearerToken()
-			self.token = self._tokenInfo["access_token"]
+			self._token = self._tokenInfo["access_token"]
+
+		return self._token
 
 	def fetchBearerToken(self):
 		#send request to the twitch api to get a bearer token from our client ID and client secret
