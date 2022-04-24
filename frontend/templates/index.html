@@ -91,9 +91,31 @@
 	const now = new Date();
 	now.setUTCHours(0, 0, 0, 0);
 
-	$("input[name^='fromDate']").val(now.toISOString().slice(0, 19));
-	now.setUTCHours(23, 59);
-	$("input[name^='toDate']").val(now.toISOString().slice(0, 19));
+	const params = new URLSearchParams(window.location.search);
+	toDate = "";
+	fromDate = "";
+
+	if (params.has("fromDate"))
+	{
+		fromDate = params.get("fromDate");
+	}
+	else
+	{
+		fromDate = now.toISOString().slice(0, 19);
+	}
+
+	if (params.has("toDate"))
+	{
+		toDate = params.get("toDate");
+	}
+	else
+	{
+		now.setUTCHours(23, 59);
+		toDate = now.toISOString().slice(0, 19);
+	}
+
+	$("input[name^='fromDate']").val(fromDate);
+	$("input[name^='toDate']").val(toDate);
 });
 </script>
 {% endblock %}
