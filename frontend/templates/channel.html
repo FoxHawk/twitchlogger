@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %} {{ channel }}'s logs {% endblock %}
+
+{% block navbar %}
+<form class="form-inline" action="/channel/{{ channel }}" method="get">
+	<input type="datetime-local" name="fromDate">
+	<input type="datetime-local" name="toDate">
+	<input class="btn btn-primary" type="submit" value="Filter">
+</form>
+{% endblock %}
+
+{% block content %}
+
+<div class="text-white" style="margin: 2%;">
+	<h1 style="text-align: center;">{{ channel }}</h1>
+	<table class="table table-fixed table-dark table-striped">
+		<thead>
+			<th scope="col" class="col-3">Timestamp</th>
+			<th scope="col" class="col-3">Game</th>
+			<th scope="col" class="col-4">Title</th>
+			<th scope="col" class="col-2">Event Type</th>
+		</thead>
+		<tbodys>
+			{% for log in streamer %}
+			<tr>
+				<td class="col-3">{{ log.datetimestamp|date:"dS M. Y, H:i" }}</td>
+				<td class="col-3">{{ log.game }}</td>
+				<td class="col-4">{{ log.title }}</td>
+				<td class="col-2">{{ log.type }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{% load static %}
+<script>
+	window.addEventListener("load", function() {
+	const now = new Date();
+	now.setUTCHours(0, 0, 0, 0);
+
+	const params = new URLSearchParams(window.location.search);
+	toDate = "";
+	fromDate = "";
+
+	if (params.has("fromDate"))
+	{
+		fromDate = params.get("fromDate");
+	}
+	else
+	{
+		fromDate = now.toISOString().slice(0, 19);
+	}
+
+	if (params.has("toDate"))
+	{
+		toDate = params.get("toDate");
+	}
+	else
+	{
+		now.setUTCHours(23, 59);
+		toDate = now.toISOString().slice(0, 19);
+	}
+
+	$("input[name^='fromDate']").val(fromDate);
+	$("input[name^='toDate']").val(toDate);
+});
+</script>
+{% endblock %}

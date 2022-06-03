@@ -4,6 +4,7 @@ from django.http.response import HttpResponseBadRequest, HttpResponseServerError
 from django.http import HttpRequest, HttpResponse
 from django.template import loader
 from api import manageSubscriptions
+from frontend.Views import templateFactory
 from twitchEvents.models import LogEntry, ChannelEvents
 
 def index(request: HttpRequest):
@@ -13,9 +14,8 @@ def index(request: HttpRequest):
 	for i in data:
 		events.append({"channel": i.channelName, "streamUp": i.streamUp, "streamDown": i.streamDown, "streamUpdate": i.streamUpdate})
 
-	template = loader.get_template("manage.html") #load the management page template
-	context = {"events": events}
-	return HttpResponse(template.render(context=context, request=request)) #return the rendered template page
+	template = templateFactory.buildTemplate("manage.html", {"events": events}, request)
+	return HttpResponse(template)
 
 def toggleEvent(request: HttpRequest):
 	if "channel" not in request.GET or "event" not in request.GET:
