@@ -1,19 +1,20 @@
 from django.utils import timezone
 from django.http import HttpRequest, HttpResponse
 from django.template import loader
+from frontend.Views import templateFactory
 from twitchEvents.models import LogEntry
 
 def index(request: HttpRequest):
 	channels = None
+	#TODO: refactor (DRY)
 	#if the from date or to date were supplied, use the default values of the beginning of the day to now
 	if "fromDate" not in request.GET.keys() or "toDate" not in request.GET.keys():
 		channels = getStreamers(timezone.now().replace(hour=0, minute=0, second=0, microsecond=0), timezone.now())
 	else:
 		channels = getStreamers(request.GET["fromDate"], request.GET["toDate"])
 
-	#load the template and render it with the channels in the context
-	tp = loader.get_template("index.html")
-	return HttpResponse(tp.render(request=request, context={"streamers": channels}))
+	template = templateFactory.buildTemplate("index.html", {"streamers": channels}, request)
+	return HttpResponse(template)
 
 def getStreamers(dateFrom: timezone, dateTo: timezone):
 	data = LogEntry.objects.filter(datetimestamp__gte=dateFrom, datetimestamp__lte=dateTo).exclude(game="N/A").exclude(game="")
