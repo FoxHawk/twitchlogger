@@ -24,6 +24,14 @@
 				<li class="nav-item">
 					<a class="nav-link" href="/">Log Viewer</a>
 				</li>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="channelDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Channels</a>
+					<div class="dropdown-menu" style="overflow-y: scroll; max-height: 500px;">
+						{% for i in navbarChannels %}
+						<a class="dropdown-item" href="/channel/{{ i }}">{{ i }}</a>
+						{% endfor %}
+					</div>
+				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="/manage">Manage Logged Channels</a>
 				</li>
