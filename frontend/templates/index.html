@@ -50,7 +50,7 @@
 {% for streamer in streamers %}
 	<div class="card bg-secondary text-white">
 		<div class="card-header">
-			<h4 class="card-title">{{ streamer.name }}</h4>
+			<h4 class="card-title"><a href="/channel/{{ streamer.name }}" class="text-white">{{ streamer.name }}</a></h4>
 			<a name="{{ streamer.name }}"></a>
 		</div>
 		<div class="card-body">
